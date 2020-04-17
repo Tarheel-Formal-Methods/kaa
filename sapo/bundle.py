@@ -49,7 +49,7 @@ class Bundle:
         return (A,b)
 
     #Canonize the bundle.
-    def _canonize(self):
+    def canonize(self):
 
         A, b = self.getIntersect()
 
@@ -112,7 +112,8 @@ class Bundle:
                 p_new_offu[col_ind] = min(max_bern_coeffu, p_new_offu[col_ind])
                 p_new_offl[col_ind] = min(max_bern_coeffl, p_new_offl[col_ind])
 
-            canon_bund = self._canonize()
+            tran_bund = Bundle(self.T, self.L, p_new_offu, p_new_offl, self.vars, self.f) #Major issues could arise with unused direcitions
+            canon_bund = tran_bund.canonize()
             return canon_bund
 
     #get Parallelotope object associated to temp_ind
