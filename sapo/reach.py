@@ -9,7 +9,7 @@ class ReachSet:
     def computeReachSet(self, time_steps):
 
         initial_set = self.model.bundle
-        trans = BundleTransformer(self.model, self.model.f)
+        trans = BundleTransformer(self.model.f)
         flowpipe = [initial_set]
 
         for ind in range(time_steps):
