@@ -1,4 +1,4 @@
-import sapo.bundle
+from sapo.bundle import Bundle, BundleTransformer
 
 class ReachSet:
 
@@ -9,10 +9,11 @@ class ReachSet:
     def computeReachSet(self, time_steps):
 
         initial_set = self.model.bundle
+        trans = BundleTransformer(self.model, self.model.f)
         flowpipe = [initial_set]
 
         for ind in range(time_steps):
-            trans_bund = flowpipe[ind].transform()
+            trans_bund = trans.transform(flowpipe[ind])
             flowpipe.append(trans_bund)
             print(trans_bund)
 
