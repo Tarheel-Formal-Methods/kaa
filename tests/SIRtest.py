@@ -1,12 +1,8 @@
 from sapo.reach import ReachSet
-from sapo.sir import SIR
+from models.sir import SIR
 
-def main():
+def test_SIR():
 
     model = SIR()
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(300)
-
-
-if __name__ == "__main__":
-    main()
