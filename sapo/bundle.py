@@ -59,7 +59,7 @@ class Bundle:
         for row_ind, row in enumerate(self.L):
 
             canon_offu[row_ind] = (linprog(row, A, b)).fun
-            canon_offl[row_ind] = (linprog(-1 * row, A, b)).fun
+            canon_offl[row_ind] = (linprog(np.negative(row), A, b)).fun
 
         return Bundle(self.T, self.L, canon_offu, canon_offl, self.vars, self.f)
 
@@ -102,7 +102,6 @@ class Bundle:
                 transf_bound_polyu = bound_polyu.subs(var_sub)
                 transf_bound_polyl = bound_polyl.subs(var_sub)
                 print(transf_bound_polyu, transf_bound_polyl)
-                #exit()
 
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, self.vars)
@@ -127,7 +126,7 @@ class Bundle:
 
         for fac_ind, facet in enumerate(self.T[temp_ind].astype(int)):
             A[fac_ind] = self.L[facet]
-            A[fac_ind + self.sys_dim] = -1 * self.L[facet]
+            A[fac_ind + self.sys_dim] = np.negative(self.L[facet])
             b[fac_ind] = self.offu[facet]
             b[fac_ind + self.sys_dim] = self.offl[facet]
 

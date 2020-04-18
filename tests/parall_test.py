@@ -8,6 +8,7 @@ def test_min_max_parall_1():
 
     A = np.empty([4,2])
     b = np.empty(4)
+
     A[0] = [1,0]
     A[1] = [0,1]
     A[2] = [-1,0]
