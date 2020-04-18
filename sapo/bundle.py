@@ -101,6 +101,8 @@ class Bundle:
                 #transform to range over unit box
                 transf_bound_polyu = bound_polyu.subs(var_sub)
                 transf_bound_polyl = bound_polyl.subs(var_sub)
+                print(transf_bound_polyu, transf_bound_polyl)
+                #exit()
 
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, self.vars)
@@ -109,6 +111,7 @@ class Bundle:
                 base_convertl = BernsteinBaseConverter(transf_bound_polyl, self.vars)
                 min_bern_coeffl, max_bern_coeffl = base_convertl.computeBernCoeff()
 
+                #print(''.join(['Max:', str(max_bern_coeffu),' Min: ', str(max_bern_coeffl)]))
                 p_new_offu[col_ind] = min(max_bern_coeffu, p_new_offu[col_ind])
                 p_new_offl[col_ind] = min(max_bern_coeffl, p_new_offl[col_ind])
 

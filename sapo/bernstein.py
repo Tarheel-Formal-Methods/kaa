@@ -31,19 +31,19 @@ class BernsteinBaseConverter:
             #compute coefficient
             coeff_mul_list = []
             for ind,_ in enumerate(self.degree):
-                j_coeff = self._choose(self.degree[ind], j[ind]) / self._choose(i[ind], j[ind])
+                j_coeff = self._choose(i[ind], j[ind]) / self._choose(self.degree[ind], j[ind])
                 coeff_mul_list.append(j_coeff)
 
             bern_coef = reduce(mul,coeff_mul_list)
             poly_coef = self.poly.coeff_monomial(self._getMonom(j).as_expr())
             #print(i,poly_coef)
-            bern_sum_list.append(bern_coef*poly_coef)
+            bern_sum_list.append(bern_coef * poly_coef)
 
         #print(bern_sum_list)
         return reduce(add, bern_sum_list)
 
     #Compute the ith Bernstein polynomial with degree tuple i
-    def computeIthBernBasis(self, i):
+    def _computeIthBernBasis(self, i):
 
         bern_poly_list = []
         for var, var_index in enumerate(self.vars):

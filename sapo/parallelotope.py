@@ -1,5 +1,5 @@
 import numpy as np
-import scipy as sp
+from scipy.optimize import linprog
 
 
 class Parallelotope:
@@ -11,22 +11,14 @@ class Parallelotope:
 
     def getMinPoint(self):
 
-        min_coord = []
-        for var_ind, _ in enumerate(self.vars):
-            c = [0 for _ in enumerate(self.vars)]
-            c[var_ind] = 1
-            var_min = sp.optimize.linprog(c,self.A,self.b)
-            min_coord.append(var_min.fun)
+        c = [1 for _ in enumerate(self.vars)]
+        var_min = linprog(c, A_ub=self.A, b_ub=self.b)
 
-        return min_coord
+        return var_min.x
 
     def getMaxPoint(self):
 
-        max_coord = []
-        for var_ind, _ in enumerate(self.vars):
-            c = [0 for _ in enumerate(self.vars)]
-            c[var_ind] = -1
-            var_max = sp.optimize.linprog(c,self.A,self.b)
-            max_coord.append(-1 * var_max.fun)
+        c = [-1 for _ in enumerate(self.vars)]
+        var_max = linprog(c, A_ub=self.A, b_ub=self.b)
 
-        return max_coord
+        return var_max.x
