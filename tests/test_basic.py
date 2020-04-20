@@ -9,4 +9,4 @@ def test_plot_basic():
     basic_reach = ReachSet(basic_mod)
 
     flowpipe = basic_reach.computeReachSet(100)
-    FlowPipePlotter(flowpipe).plot2DProj(1)
+    FlowPipePlotter(flowpipe).plot2DProj(0)

@@ -15,7 +15,7 @@ class Rossler(Model):
 
         dx = x + (-y-z)*0.025
         dy = y + (x + 0.1*y)*0.025
-        dz = + (0.1 + z*(x-14))*0.02
+        dz = z + (0.1 + z*(x-14))*0.02
 
         dyns = [dx, dy ,dz]
 

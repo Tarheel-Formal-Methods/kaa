@@ -62,7 +62,7 @@ class Bundle:
 
         return Bundle(self.T, self.L, canon_offu, canon_offl, self.vars)
 
-    #get Parallelotope object associated to temp_ind
+    #get Parallelotope object associated to template_ind
     def getParallelotope(self, temp_ind):
 
         A = np.empty([2*self.sys_dim,self.sys_dim])
@@ -87,6 +87,9 @@ class BundleTransformer:
     # Transform the bundle according to Polynomial DDS
     def transform(self, bund):
 
+        p_new_offu = np.full(bund.num_direct, np.inf)
+        p_new_offl = np.full(bund.num_direct, np.inf)
+
         #get parallelotope P_i
         for row_ind, row in enumerate(bund.T):
 
@@ -104,10 +107,7 @@ class BundleTransformer:
                 transf_expr = (p_max - p_min) * var + p_min
                 var_sub.append((var, transf_expr))
 
-            p_new_offu = np.full(bund.num_direct, np.inf)
-            p_new_offl = np.full(bund.num_direct, np.inf)
-
-            for col_ind, column in enumerate(row.astype(int)):
+            for column in row.astype(int):
                 #get facet
                 curr_L = bund.L[column] #row in L
 
@@ -126,15 +126,15 @@ class BundleTransformer:
 
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
-                min_bern_coeffu, max_bern_coeffu = base_convertu.computeBernCoeff()
+                max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
 
                 base_convertl = BernsteinBaseConverter(transf_bound_polyl, bund.vars)
-                min_bern_coeffl, max_bern_coeffl = base_convertl.computeBernCoeff()
+                max_bern_coeffl, min_bern_coeffl = base_convertl.computeBernCoeff()
 
-                #print(''.join(['Max:', str(max_bern_coeffu),' Min: ', str(max_bern_coeffl)]))
-                p_new_offu[col_ind] = min(max_bern_coeffu, p_new_offu[col_ind])
-                p_new_offl[col_ind] = min(max_bern_coeffl, p_new_offl[col_ind])
+                #print(''.join(['Max:', str(max_bern_coeffu),' Min: ', str(max_bern_coeffl), 'for P: ', str(row)]))
+                p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
+                p_new_offl[column] = min(max_bern_coeffl, p_new_offl[column])
 
-            trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars) #Major issues could arise with unused direcitions
-            canon_bund = trans_bund.canonize()
-            return canon_bund
+        trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars) #Major issues could arise with unused direcitions
+        canon_bund = trans_bund.canonize()
+        return canon_bund
