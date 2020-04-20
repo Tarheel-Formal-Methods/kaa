@@ -1,4 +1,5 @@
 from sapo.bundle import Bundle, BundleTransformer
+from sapo.flowpipe import FlowPipe
 
 class ReachSet:
 
@@ -15,6 +16,6 @@ class ReachSet:
         for ind in range(time_steps):
             trans_bund = trans.transform(flowpipe[ind])
             flowpipe.append(trans_bund)
-            print(trans_bund)
+            #print(trans_bund)
 
-        return flowpipe
+        return FlowPipe(flowpipe, self.model.vars)
