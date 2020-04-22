@@ -7,10 +7,12 @@ from sapo.model import Model
 class Basic(Model):
 
     def __init__(self):
-        
+
         x,y = sp.Symbol('x'), sp.Symbol('y')
+
         dx = x + 1
         dy = y + 1
+
         dyns  = [dx, dy]
         vars = [x, y]
 

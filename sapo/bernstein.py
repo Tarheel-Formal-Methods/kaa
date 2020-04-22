@@ -3,7 +3,7 @@ import sympy as sp
 from functools import reduce
 from math import factorial
 from operator import mul,add
-
+#NOT INCLUDING MISSING TERMS!!!
 class BernsteinBaseConverter:
 
     def __init__(self, poly, vars):
@@ -12,14 +12,21 @@ class BernsteinBaseConverter:
         self.vars = vars
         self.var_num = len(vars)
         self.degree = self._getDegree()
+        self.monom_list = self._computeLowerDeg(self.degree)
 
     #Computes the maximum and minimum Bernstein coefficients for self.poly
     def computeBernCoeff(self):
 
         bern_coeff = []
-        for monom in self.poly.monoms():
+        poly_monoms = self.poly.monoms()
+        
+        for monom in poly_monoms:
             bern_coeff.append(self._computeIthBernCoeff(monom))
 
+        #Check for any missing terms
+        if(len(self.monom_list) != len(poly_monoms)):
+            bern_coeff.append(0)
+            
         return max(bern_coeff), min(bern_coeff)
 
     #Compute the ith Bernstein coefficient.
@@ -31,12 +38,13 @@ class BernsteinBaseConverter:
         for j in lower_degs:
             #compute coefficient
             coeff_mul_list = []
-            for ind,_ in enumerate(self.degree):
+            
+            for ind, _ in enumerate(self.degree):
                 j_coeff = self._choose(i[ind], j[ind]) / self._choose(self.degree[ind], j[ind])
                 coeff_mul_list.append(j_coeff)
 
             bern_coef = reduce(mul,coeff_mul_list)
-            poly_coef = self.poly.coeff_monomial(self._getMonom(j).as_expr())
+            poly_coef = self.poly.coeff_monomial(self._getMonom(j))
             #print(i,poly_coef)
             bern_sum_list.append(bern_coef * poly_coef)
 
@@ -99,7 +107,7 @@ class BernsteinBaseConverter:
 
         monomial = sp.Poly(expr, self.vars)
 
-        return monomial
+        return monomial.as_expr()
 
     def _choose(self, n, r):
         return factorial(n) / (factorial(r)*factorial(n-r))
