@@ -1,3 +1,5 @@
+import time
+
 from sapo.bundle import Bundle, BundleTransformer
 from sapo.flowpipe import FlowPipe
 
@@ -14,8 +16,12 @@ class ReachSet:
         flowpipe = [initial_set]
 
         for ind in range(time_steps):
+
+            start = time.time()
             trans_bund = trans.transform(flowpipe[ind])
+            end = time.time()
+
+            print("Computing Step {0} -- Time Elapsed: {1} sec".format(ind, end - start))
             flowpipe.append(trans_bund)
-            #print(trans_bund)
 
         return FlowPipe(flowpipe, self.model.vars)

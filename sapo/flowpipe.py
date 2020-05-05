@@ -21,6 +21,10 @@ class FlowPipePlotter:
     def __init__(self, flowpipe):
         self.flowpipe = flowpipe
 
+    """
+    Plots projection of reachable set against time t.
+    """
+
     def plot2DProj(self, var_ind):
         fig, ax = plt.subplots(1,1)
         pipe_len = len(self.flowpipe)
@@ -40,8 +44,7 @@ class FlowPipePlotter:
             y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b)).fun
             y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b)).fun
 
-        #print(y_min, y_max)
-        ax.fill_between(t, y_min, y_max)
+        ax.fill_between(t, y_max, y_min)
         ax.set_xlabel("t: time steps")
-        ax.set_ylabel("var: Reachable Set of Chosen Dim")
+        ax.set_ylabel("Reachable Set for {0}".format(self.flowpipe.vars[var_ind]))
         fig.show()

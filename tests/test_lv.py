@@ -1,11 +1,11 @@
 from sapo.reach import ReachSet
 from sapo.flowpipe import FlowPipePlotter
-from models.sir import SIR
+from models.lotkavolterra import LotkaVolterra
 
-def test_SIR():
+def test_LV():
 
-    model = SIR()
+    model = LotkaVolterra()
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(300)
 
-    FlowPipePlotter(mod_flow).plot2DProj(0)
+    FlowPipePlotter(mod_flow).plot2DProj(1)

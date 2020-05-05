@@ -4,6 +4,7 @@ from functools import reduce
 from math import factorial
 from operator import mul,add
 #NOT INCLUDING MISSING TERMS!!!
+
 class BernsteinBaseConverter:
 
     def __init__(self, poly, vars):
@@ -19,13 +20,9 @@ class BernsteinBaseConverter:
 
         bern_coeff = []
         poly_monoms = self.poly.monoms()
-        
+            
         for monom in poly_monoms:
             bern_coeff.append(self._computeIthBernCoeff(monom))
-
-        #Check for any missing terms
-        if(len(self.monom_list) != len(poly_monoms)):
-            bern_coeff.append(0)
             
         return max(bern_coeff), min(bern_coeff)
 
@@ -85,7 +82,6 @@ class BernsteinBaseConverter:
                     curr_degree[degree_pos + 1] = 0
 
         recurse(accum_list, 0)
-        #print(degree_list)
         return degree_list
 
     def _getDegree(self):

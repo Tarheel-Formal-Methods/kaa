@@ -45,7 +45,6 @@ class Bundle:
             b[ind] = self.offu[ind]
             b[ind + self.num_direct] = self.offl[ind]
 
-        #print(A, b)
         return (A,b)
 
     #Canonize the bundle.
@@ -58,8 +57,8 @@ class Bundle:
 
         for row_ind, row in enumerate(self.L):
 
-            canon_offu[row_ind] = (linprog(row, A, b)).fun
-            canon_offl[row_ind] = (linprog(np.negative(row), A, b)).fun
+            canon_offu[row_ind] = -1 * (linprog(np.negative(row), A, b, bounds=(None,None))).fun
+            canon_offl[row_ind] = -1 * (linprog(row, A, b, bounds=(None,None))).fun
 
         return Bundle(self.T, self.L, canon_offu, canon_offl, self.vars)
 
@@ -79,6 +78,7 @@ class Bundle:
 
     def __str__(self):
         return ''.join([str(self.offu), '  ', str(self.offl)])
+    
 
 class BundleTransformer:
 
@@ -89,7 +89,7 @@ class BundleTransformer:
     def transform(self, bund):
 
         p_new_offu = np.full(bund.num_direct, np.inf)
-        p_new_offl = np.full(bund.num_direct, np.inf)
+        p_new_offl = np.full(bund.num_direct, -1 * np.inf)
 
         #get parallelotope P_i
         for row_ind, row in enumerate(bund.T):
@@ -124,23 +124,20 @@ class BundleTransformer:
                 #print(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
-
+                
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff() #Converging example.
                                                                                     #Diverging at different speeds.
                                                                                     #Needs more rigorous testing. Understand the logic/algorithm carefully.
                                                                                     #Max(min_bern_coeffu, max_bern_coeffl) - lower bound
                                                                                     #Min(max_bern_coeffu, min_bern_coeffl) - upper bound
                                                                                     #Min/points  are not updating correctly.
-
-                #base_convertl = BernsteinBaseConverter(transf_bound_polyl, bund.vars)
-                #max_bern_coeffl, min_bern_coeffl = base_convertl.computeBernCoeff()
                 #print(''.join(["Upperbound: ", str((max_bern_coeffu, min_bern_coeffl)), "  Lowerbound:  ", str((min_bern_coeffu, max_bern_coeffl)), '\n' ]))
 
                 #print(''.join(['Max:', str(max_bern_coeffu),' Min: ', str(max_bern_coeffl), 'for P: ', str(row), '\n']))
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
-                p_new_offl[column] = min(-1 * min_bern_coeffu, p_new_offl[column])
+                p_new_offl[column] = max(-1 * min_bern_coeffu, p_new_offl[column])
 
         #print(''.join([' p_new_offu: ', str(p_new_offu), ' p_new_offl: ', str(p_new_offl), '\n']))
         trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars) #Major issues could arise with unused direcitions
-        #canon_bund = trans_bund.canonize()
-        return trans_bund
+        canon_bund = trans_bund.canonize()
+        return canon_bund
