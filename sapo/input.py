@@ -24,15 +24,3 @@ class InputFileParser:
         dyns = map(dyns_str, lambda dx: parse_expr(dx, vars))
 
         temp_str_vals = dict(self.config['DIRECTIONS']).values()
-        temp_str_list = list(temp_str_vals)
-
-        for ptope_str in temp_str_list:
-
-            ptope_expr = ptope_str.split(' , ')
-
-            for direct_str in ptope_expr:
-
-                direct_A, direct_b = direct_str[1:-1].split(', ')
-                direct_A = parse_expr(direct_A,  vars)
-
-                direct = sp.Poly(direct_A, vars).coeffs()

@@ -3,7 +3,6 @@ import sympy as sp
 from functools import reduce
 from math import factorial
 from operator import mul,add
-#NOT INCLUDING MISSING TERMS!!!
 
 class BernsteinBaseConverter:
 
@@ -19,23 +18,21 @@ class BernsteinBaseConverter:
     def computeBernCoeff(self):
 
         bern_coeff = []
-        poly_monoms = self.poly.monoms()
-            
-        for monom in poly_monoms:
+
+        for monom in self.monom_list:
             bern_coeff.append(self._computeIthBernCoeff(monom))
-            
+
         return max(bern_coeff), min(bern_coeff)
 
     #Compute the ith Bernstein coefficient.
     def _computeIthBernCoeff(self, i):
 
-        lower_degs = self._computeLowerDeg(i)
+        lower_degs = self._computeLowerDeg(i) #redundent operation
 
         bern_sum_list = []
         for j in lower_degs:
-            #compute coefficient
             coeff_mul_list = []
-            
+
             for ind, _ in enumerate(self.degree):
                 j_coeff = self._choose(i[ind], j[ind]) / self._choose(self.degree[ind], j[ind])
                 coeff_mul_list.append(j_coeff)

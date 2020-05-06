@@ -8,4 +8,4 @@ def test_SIR():
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(300)
 
-    FlowPipePlotter(mod_flow).plot2DProj(0)
+    FlowPipePlotter(mod_flow).plot2DProj(1)

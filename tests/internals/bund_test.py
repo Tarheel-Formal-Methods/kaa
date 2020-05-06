@@ -34,7 +34,7 @@ def test_bund_trans_1():
     init_bund = Bundle(T, L, offu, offl, vars)
     trans = BundleTransformer(dyns)
 
-    trans_bund = init_bund
+    trans_bund = trans.transform(init_bund)
 
     print(trans_bund)
     assert False

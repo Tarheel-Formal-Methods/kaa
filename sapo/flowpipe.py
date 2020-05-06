@@ -41,8 +41,8 @@ class FlowPipePlotter:
 
         for bund_ind, bund in enumerate(self.flowpipe):
             bund_A, bund_b = bund.getIntersect()
-            y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b)).fun
-            y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b)).fun
+            y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b, bounds=(None,None))).fun
+            y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b, bounds=(None,None))).fun
 
         ax.fill_between(t, y_max, y_min)
         ax.set_xlabel("t: time steps")
