@@ -3,6 +3,11 @@ import time
 from sapo.bundle import Bundle, BundleTransformer
 from sapo.flowpipe import FlowPipe
 
+"""
+Object handling all reachable flowpipe computations.
+TODO
+    - Proper debugging framework.
+"""
 class ReachSet:
 
     def __init__(self, model):

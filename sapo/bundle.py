@@ -118,17 +118,13 @@ class BundleTransformer:
                 #compute polynomial \Lambda_i \cdot (f(v(x)))
 
                 bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(self.f) ]
-                #bound_polyl = [ -1 * curr_L[func_ind] * func for func_ind, func in enumerate(self.f) ]
 
                 bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
-                #bound_polyl = reduce(add, bound_polyl)
-
                 transf_bound_polyu = bound_polyu.subs(var_sub)
-                #transf_bound_polyl = bound_polyl.subs(var_sub)
                 #print(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
+                
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
-                #base_convertl = BernsteinBaseConverter(transf_bound_polyl, bund.vars)
 
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff() #Converging example.
                                                                                     #Diverging at different speeds.
@@ -136,7 +132,6 @@ class BundleTransformer:
                                                                                     #Max(min_bern_coeffu, max_bern_coeffl) - lower bound
                                                                                     #Min(max_bern_coeffu, min_bern_coeffl) - upper bound
                                                                                     #Min/points  are not updating correctly.
-                #max_bern_coeffl, min_bern_coeffl = base_convertl.computeBernCoeff()
                 #print(''.join(["Upperbound: ", str((max_bern_coeffu, min_bern_coeffl)), "  Lowerbound:  ", str((min_bern_coeffu, max_bern_coeffl)), '\n' ]))
 
                 #print(''.join(['MaxB:', str(max_bern_coeffu),' MinB: ', str(min_bern_coeffu), 'for P: ', str(row), '\n']))
@@ -145,6 +140,6 @@ class BundleTransformer:
                 #print(''.join(['Max:', str(p_new_offu[column]),' Min: ', str(p_new_offl[column]), 'for P: ', str(row), '\n']))
 
         #print(''.join([' p_new_offu: ', str(p_new_offu), ' p_new_offl: ', str(p_new_offl), '\n']))
-        trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars) #Major issues could arise with unused direcitions
+        trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)
         canon_bund = trans_bund.canonize()
         return canon_bund

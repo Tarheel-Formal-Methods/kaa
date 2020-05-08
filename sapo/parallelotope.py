@@ -8,6 +8,7 @@ class Parallelotope:
         self.A = A
         self.b = b
         self.vars = vars
+        #print(A,"      ",b)
 
     def getMinPoint(self):
 

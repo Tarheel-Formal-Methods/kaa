@@ -9,3 +9,7 @@ def test_VDP():
     mod_flow = mod_reach.computeReachSet(100)
 
     FlowPipePlotter(mod_flow).plot2DProj(0)
+
+
+if __name__ == '__main__':
+    test_VDP()
