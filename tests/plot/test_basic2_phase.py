@@ -1,11 +1,11 @@
 from sapo.reach import ReachSet
 from sapo.flowpipe import FlowPipePlotter
 
-from models.basic.basic import Basic
+from models.basic.basic2 import Basic2
 
-def test_phase_basic():
+def test_phase_basic2():
 
-    basic_mod = Basic()
+    basic_mod = Basic2()
     basic_reach = ReachSet(basic_mod)
 
     flowpipe = basic_reach.computeReachSet(100)

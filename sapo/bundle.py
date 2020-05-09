@@ -89,7 +89,7 @@ class BundleTransformer:
     def transform(self, bund):
 
         p_new_offu = np.full(bund.num_direct, np.inf)
-        p_new_offl = np.full(bund.num_direct, np.inf)
+        p_new_offl = np.full(bund.num_direct, -1 * np.inf)
 
         #get parallelotope P_i
         for row_ind, row in enumerate(bund.T):
@@ -122,7 +122,7 @@ class BundleTransformer:
                 bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
                 transf_bound_polyu = bound_polyu.subs(var_sub)
                 #print(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
-                
+
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
 
@@ -136,8 +136,8 @@ class BundleTransformer:
 
                 #print(''.join(['MaxB:', str(max_bern_coeffu),' MinB: ', str(min_bern_coeffu), 'for P: ', str(row), '\n']))
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
-                p_new_offl[column] = min(-1 * min_bern_coeffu, p_new_offl[column])
-                #print(''.join(['Max:', str(p_new_offu[column]),' Min: ', str(p_new_offl[column]), 'for P: ', str(row), '\n']))
+                p_new_offl[column] = max(-1 * min_bern_coeffu, p_new_offl[column])
+                #print(''.join(['Max:' str(p_new_offu[column]),' Min: ', str(p_new_offl[column]), 'for P: ', str(row), '\n']))
 
         #print(''.join([' p_new_offu: ', str(p_new_offu), ' p_new_offl: ', str(p_new_offl), '\n']))
         trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)

@@ -26,7 +26,7 @@ class FlowPipePlotter:
 
     def __init__(self, flowpipe):
         self.flowpipe = flowpipe
-        self.dim_sys = len(flowpipe)
+        self.dim_sys = len(flowpipe.vars)
 
     """
     Plots projection of reachable set against time t.
@@ -56,41 +56,44 @@ class FlowPipePlotter:
         ax.set_ylabel("Reachable Set for {0}".format(self.flowpipe.vars[var_ind]))
         fig.show()
 
-    def plot2DPhase(self, var_xind, var_yind):
+    def plot2DPhase(self, x, y):
 
         #Define the following projected normal vectors
-        x,y = flowpipe.vars[var_xind], flowpipe.vars[var_yind]
-        norm_vecs = [[0 for _ in range(dim_sys)] for _ in range(4)]
+        norm_vecs = np.zeros([4,self.dim_sys])
 
         norm_vecs[0][x] = 1
         norm_vecs[1][y] = 1
         norm_vecs[2][x] = -1
         norm_vecs[3][y] = -1
 
-        norm_A = np.stack(norm_vecs, axis=0)
+        #zero_ind = np.argwhere(np.all(norm_A == 0, axis= 0))
+        #norm_A = np.delete(norm_A, zero_ind, axis = 1)
 
         fig, ax = plt.subplots(1,1)
 
         #Effort into renaming some of these vars
-        offsets = []
-        c = [0, 0, -1]
+        c = [0 for _ in range(self.dim_sys + 1)]
+        c[-1] = -1
+
         for bund in self.flowpipe:
             bund_A, bund_b = bund.getIntersect()
 
-            bund_off = np.empty(4)
-            for i in range(4):
-                bund_off[i] = -1 * linprog(np.negative(norm_vecs[i]), bund_A, bund_b, bounds=(None,None)).fun
+            bund_off = np.empty([len(norm_vecs),1])
+            for i in range(len(norm_vecs)):
+                bund_off[i] = linprog(np.negative(norm_vecs[i]), bund_A, bund_b, bounds=(None,None)).fun
 
-            phase_intersect = np.stack(norm_A,bund_off)
+            phase_intersect = np.hstack((norm_vecs, bund_off))
+
             #compute center of intersection
+            row_norm = np.reshape(np.linalg.norm(norm_vecs, axis=1), (norm_vecs.shape[0],1))
+            center_A = np.hstack((norm_vecs, row_norm))
+            print(center_A)
 
-            center_A = np.empty([4,3])
-            for k in range(4):
-                center_A[k] = np.concatenate(norm_vecs[k], [np.pdist(norm_vecs[k], 'euclidean')])
 
-            center_pt = linprog(c, center_A, bund_off, bounds=(None,None)).x
-
-            hs = HalfspaceIntersection(phase_intersect, center_pt)
+            print(np.negative(bund_off.T))
+            center_pt = linprog(c, A_ub=center_A, b_ub=np.negative(bund_off.T)).x
+            hs = HalfspaceIntersection(phase_intersect, center_pt[:-1]) #Issues with facets and feasible point being coplanar.
             x, y = zip(*hs.intersections)
-            ax.fill(x, y)
-        fig,show()
+            ax.fill(x, y, 'b')
+
+        fig.show()
