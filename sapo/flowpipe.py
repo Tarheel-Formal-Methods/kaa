@@ -59,19 +59,20 @@ class FlowPipePlotter:
     def plot2DPhase(self, x, y):
 
         #Define the following projected normal vectors
-        norm_vecs = np.zeros([4,self.dim_sys])
+        norm_vecs = np.zeros([8,self.dim_sys])
 
-        norm_vecs[0][x] = 1
-        norm_vecs[1][y] = 1
-        norm_vecs[2][x] = -1
-        norm_vecs[3][y] = -1
-
-        #zero_ind = np.argwhere(np.all(norm_A == 0, axis= 0))
-        #norm_A = np.delete(norm_A, zero_ind, axis = 1)
+        norm_vecs[0][x] = 1; norm_vecs[1][y] = 1; #Testing support functions for these normals for now
+        norm_vecs[2][x] = -1; norm_vecs[3][y] = -1;
+        norm_vecs[4][x] = 1;  norm_vecs[4][y] = 1;
+        norm_vecs[5][x] = 1;  norm_vecs[5][y] = -1;
+        norm_vecs[6][x] = -1;  norm_vecs[6][y] = 1;
+        norm_vecs[7][x] = -1;  norm_vecs[7][y] = -1;
 
         fig, ax = plt.subplots(1,1)
 
         #Effort into renaming some of these vars
+        comple_dim = [i for i in range(self.dim_sys) if i not in [x,y]] #dimensions not of x,y
+
         c = [0 for _ in range(self.dim_sys + 1)]
         c[-1] = -1
 
@@ -82,18 +83,19 @@ class FlowPipePlotter:
             for i in range(len(norm_vecs)):
                 bund_off[i] = linprog(np.negative(norm_vecs[i]), bund_A, bund_b, bounds=(None,None)).fun
 
-            phase_intersect = np.hstack((norm_vecs, bund_off))
+            phase_intersect = np.hstack((norm_vecs, bund_off))  #remove irrelevant dimensions. Mostly doing this to make HalfspaceIntersection happy.
+            phase_intersect = np.delete(phase_intersect, comple_dim, axis=1)
 
             #compute center of intersection
             row_norm = np.reshape(np.linalg.norm(norm_vecs, axis=1), (norm_vecs.shape[0],1))
             center_A = np.hstack((norm_vecs, row_norm))
-            print(center_A)
 
-
-            print(np.negative(bund_off.T))
+            #print(np.negative(bund_off.T))
             center_pt = linprog(c, A_ub=center_A, b_ub=np.negative(bund_off.T)).x
-            hs = HalfspaceIntersection(phase_intersect, center_pt[:-1]) #Issues with facets and feasible point being coplanar.
-            x, y = zip(*hs.intersections)
-            ax.fill(x, y, 'b')
+            center_pt = np.asarray([b for b_i, b in enumerate(center_pt) if b_i in [x, y]])
+
+            hs = HalfspaceIntersection(phase_intersect, center_pt) #Issues with facets and feasible point being coplanar.
+            inter_x, inter_y = zip(*hs.intersections)
+            ax.fill(inter_x, inter_y, 'b')
 
         fig.show()
