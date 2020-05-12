@@ -91,7 +91,7 @@ class FlowPipePlotter:
             center_A = np.hstack((norm_vecs, row_norm))
 
             #print(np.negative(bund_off.T))
-            center_pt = linprog(c, A_ub=center_A, b_ub=np.negative(bund_off.T)).x
+            center_pt = linprog(c, A_ub=center_A, b_ub=np.negative(bund_off.T), bounds=(None,None)).x
             center_pt = np.asarray([b for b_i, b in enumerate(center_pt) if b_i in [x, y]])
 
             hs = HalfspaceIntersection(phase_intersect, center_pt) #Issues with facets and feasible point being coplanar.
