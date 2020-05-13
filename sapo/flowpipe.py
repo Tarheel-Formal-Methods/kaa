@@ -27,33 +27,39 @@ class FlowPipePlotter:
     def __init__(self, flowpipe):
         self.flowpipe = flowpipe
         self.dim_sys = len(flowpipe.vars)
+        self.vars = self.flowpipe.vars
 
     """
     Plots projection of reachable set against time t.
     """
 
-    def plot2DProj(self, var_ind):
-        fig, ax = plt.subplots(1,1)
+    def plot2DProj(self, var_ind_list):
+        num_var = len(var_ind_list)
+
+        fig, ax = plt.subplots(1,num_var)
         pipe_len = len(self.flowpipe)
 
         t = np.arange(0, pipe_len, 1)
-        y_min = np.empty(pipe_len)
-        y_max = np.empty(pipe_len)
 
-        y_min_obj = [0 for _ in self.flowpipe.vars]
-        y_min_obj[var_ind] = 1
+        for ax_ind, var_ind in enumerate(var_ind_list):
+            y_min = np.empty(pipe_len)
+            y_max = np.empty(pipe_len)
 
-        y_max_obj = [0 for _ in self.flowpipe.vars]
-        y_max_obj[var_ind] = -1
+            y_min_obj = [0 for _ in self.vars]
+            y_min_obj[var_ind] = 1
 
-        for bund_ind, bund in enumerate(self.flowpipe):
-            bund_A, bund_b = bund.getIntersect()
-            y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b, bounds=(None,None))).fun
-            y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b, bounds=(None,None))).fun
+            y_max_obj = [0 for _ in self.vars]
+            y_max_obj[var_ind] = -1
 
-        ax.fill_between(t, y_min, y_max)
-        ax.set_xlabel("t: time steps")
-        ax.set_ylabel("Reachable Set for {0}".format(self.flowpipe.vars[var_ind]))
+            for bund_ind, bund in enumerate(self.flowpipe):
+                bund_A, bund_b = bund.getIntersect()
+                y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b, bounds=(None,None))).fun
+                y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b, bounds=(None,None))).fun
+
+            ax[ax_ind].fill_between(t, y_min, y_max)
+            ax[ax_ind].set_xlabel("t: time steps")
+            ax[ax_ind].set_ylabel("Reachable Set for {0}".format(self.vars[var_ind]))
+
         fig.show()
 
     def plot2DPhase(self, x, y):
@@ -68,7 +74,7 @@ class FlowPipePlotter:
         norm_vecs[6][x] = -1;  norm_vecs[6][y] = 1;
         norm_vecs[7][x] = -1;  norm_vecs[7][y] = -1;
 
-        fig, ax = plt.subplots(1,1)
+        fig, ax = plt.add_subplot(1,1)
 
         #Effort into renaming some of these vars
         comple_dim = [i for i in range(self.dim_sys) if i not in [x,y]] #dimensions not of x,y
@@ -96,6 +102,8 @@ class FlowPipePlotter:
 
             hs = HalfspaceIntersection(phase_intersect, center_pt) #Issues with facets and feasible point being coplanar.
             inter_x, inter_y = zip(*hs.intersections)
+            ax.set_xlabel('{}'.format(self.vars[x]))
+            ax.set_ylabel('{}'.format(self.vars[y]))
             ax.fill(inter_x, inter_y, 'b')
 
         fig.show()
