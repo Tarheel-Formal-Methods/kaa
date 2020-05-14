@@ -1,13 +1,14 @@
 import time
-from enum import Enum
+from enum import Enum, auto
 from functools import reduce
 from operator import add
 
 class Label(Enum):
-    TOTAL = 1
-    TRANSF = 2
-    PLOT_PROJ = 3
-    PLOT_PHASE = 4
+    TOTAL = auto()
+    TRANSF = auto()
+    PLOT_PROJ = auto()
+    PLOT_PHASE = auto()
+    BERN = auto()
 
 class Timer:
 
@@ -35,11 +36,11 @@ def assign_timer(label):
     return new_timer
 
 def generate_stats():
-    print('Average Bundle Transformation Duration: {0}'.format(avg_transf_time()))
+    print('Average Bundle Transformation Duration: {0}'.format(avg_time(Label.TRANSF)))
+    print('Average Bernstein Computation Duration: {0}'.format(avg_time(Label.BERN)))
 
-def avg_transf_time():
+def avg_time(label):
 
-    durations = [ timer.duration for timer in timer_bank if timer.label == Label.TRANSF ]
+    durations = [ timer.duration for timer in timer_bank if timer.label == label ]
     avg_duration = (reduce(add, durations)) / len(durations)
-
     return avg_duration

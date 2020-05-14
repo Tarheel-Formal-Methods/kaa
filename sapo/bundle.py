@@ -8,6 +8,9 @@ from functools import reduce
 from sapo.bernstein import BernsteinBaseConverter
 from sapo.parallelotope import Parallelotope
 
+import sapo.benchmark as Benchmark
+from sapo.benchmark import Label
+
 class Bundle:
 
     def __init__(self, T, L, offu, offl, vars):
@@ -126,14 +129,17 @@ class BundleTransformer:
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
 
+                bern_timer = Benchmark.assign_timer(Label.BERN)
+                bern_timer.start()
+
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff() #Converging example.
                                                                                     #Diverging at different speeds.
                                                                                     #Needs more rigorous testing. Understand the logic/algorithm carefully.
                                                                                     #Max(min_bern_coeffu, max_bern_coeffl) - lower bound
                                                                                     #Min(max_bern_coeffu, min_bern_coeffl) - upper bound
                                                                                     #Min/points  are not updating correctly.
+                bern_timer.end()
                 #print(''.join(["Upperbound: ", str((max_bern_coeffu, min_bern_coeffl)), "  Lowerbound:  ", str((min_bern_coeffu, max_bern_coeffl)), '\n' ]))
-
                 #print(''.join(['MaxB:', str(max_bern_coeffu),' MinB: ', str(min_bern_coeffu), 'for P: ', str(row), '\n']))
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
                 p_new_offl[column] = max(-1 * min_bern_coeffu, p_new_offl[column])
