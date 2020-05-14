@@ -132,13 +132,10 @@ class BundleTransformer:
                 bern_timer = Benchmark.assign_timer(Label.BERN)
                 bern_timer.start()
 
-                max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff() #Converging example.
-                                                                                    #Diverging at different speeds.
-                                                                                    #Needs more rigorous testing. Understand the logic/algorithm carefully.
-                                                                                    #Max(min_bern_coeffu, max_bern_coeffl) - lower bound
-                                                                                    #Min(max_bern_coeffu, min_bern_coeffl) - upper bound
-                                                                                    #Min/points  are not updating correctly.
+                max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
+
                 bern_timer.end()
+
                 #print(''.join(["Upperbound: ", str((max_bern_coeffu, min_bern_coeffl)), "  Lowerbound:  ", str((min_bern_coeffu, max_bern_coeffl)), '\n' ]))
                 #print(''.join(['MaxB:', str(max_bern_coeffu),' MinB: ', str(min_bern_coeffu), 'for P: ', str(row), '\n']))
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])

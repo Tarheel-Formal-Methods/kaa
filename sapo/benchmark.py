@@ -38,6 +38,7 @@ def assign_timer(label):
 def generate_stats():
     print('Average Bundle Transformation Duration: {0}'.format(avg_time(Label.TRANSF)))
     print('Average Bernstein Computation Duration: {0}'.format(avg_time(Label.BERN)))
+    print('Average Phase Computation Duration: {0}'.format(avg_time(Label.PLOT_PHASE)))
 
 def avg_time(label):
 
