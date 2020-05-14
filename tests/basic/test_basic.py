@@ -2,6 +2,7 @@ from sapo.reach import ReachSet
 from sapo.flowpipe import FlowPipePlotter
 
 from models.basic.basic import Basic
+import sapo.benchmark as Benchmark
 
 def test_plot_basic():
 
@@ -10,3 +11,5 @@ def test_plot_basic():
 
     flowpipe = basic_reach.computeReachSet(100)
     FlowPipePlotter(flowpipe).plot2DProj(0)
+
+    Benchmark.generate_stats()

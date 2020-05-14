@@ -4,7 +4,8 @@ import numpy as np
 from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
-from sapo.benchmark import Label, Benchmark
+import sapo.benchmark as Benchmark
+from sapo.benchmark import Label
 
 class FlowPipe:
 

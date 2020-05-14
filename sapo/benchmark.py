@@ -26,23 +26,20 @@ class Timer:
         self.duration = self.end_time - self.start_time
 
 
-class Benchmark:
+timer_bank = []
 
-    @staticmethod
-    def assign_timer(label):
-        new_timer = Timer(label)
-        BenchmarkUtils.timer_bank.append(new_timer)
+def assign_timer(label):
+    new_timer = Timer(label)
+    timer_bank.append(new_timer)
 
-        return new_timer
+    return new_timer
 
-    @staticmethod
-    def avg_transf_time():
+def generate_stats():
+    print('Average Bundle Transformation Duration: {0}'.format(avg_transf_time()))
 
-        durations = [ timer.duration for timer in BenchmarkUtils.timer_bank if timer.label == Label.TRANSF ]
-        avg_duration = (reduce(add, durations)) / len(durations)
+def avg_transf_time():
 
-        return avg_durations
+    durations = [ timer.duration for timer in timer_bank if timer.label == Label.TRANSF ]
+    avg_duration = (reduce(add, durations)) / len(durations)
 
-class BenchmarkUtils:
-
-    timer_bank = []
+    return avg_duration
