@@ -4,6 +4,8 @@ import numpy as np
 from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
+from sapo.benchmark import Label, Benchmark
+
 class FlowPipe:
 
     def __init__(self, flowpipe, vars):
@@ -33,15 +35,20 @@ class FlowPipePlotter:
     Plots projection of reachable set against time t.
     """
 
-    def plot2DProj(self, var_ind_list):
-        num_var = len(var_ind_list)
+    def plot2DProj(self, *vars_tup):
+        num_var = len(vars_tup)
 
         fig, ax = plt.subplots(1,num_var)
+        ax = [ax] if num_var == 1 else ax #For consistency of loop below.
+
         pipe_len = len(self.flowpipe)
 
         t = np.arange(0, pipe_len, 1)
 
-        for ax_ind, var_ind in enumerate(var_ind_list):
+        for ax_ind, var_ind in enumerate(vars_tup):
+            curr_var = self.vars[var_ind]
+            plot_timer = Benchmark.assign_timer(Label.PLOT_PROJ)
+
             y_min = np.empty(pipe_len)
             y_max = np.empty(pipe_len)
 
@@ -58,13 +65,23 @@ class FlowPipePlotter:
 
             ax[ax_ind].fill_between(t, y_min, y_max)
             ax[ax_ind].set_xlabel("t: time steps")
-            ax[ax_ind].set_ylabel("Reachable Set for {0}".format(self.vars[var_ind]))
+            ax[ax_ind].set_ylabel("Reachable Set for {0}".format(curr_var))
+
+            plot_timer.end()
+
+            print("Plotting projection for dimension {0} done -- Time Spent: {1}".format(curr_var, plot_timer.duration))
 
         fig.show()
 
     def plot2DPhase(self, x, y):
 
         #Define the following projected normal vectors
+        phase_timer = Benchmark.assign_timer(Label.PLOT_PHASE)
+        phase_timer.start()
+
+        x_var = self.vars[x]
+        y_var = self.vars[y]
+
         norm_vecs = np.zeros([8,self.dim_sys])
 
         norm_vecs[0][x] = 1; norm_vecs[1][y] = 1; #Testing support functions for these normals for now
@@ -74,7 +91,7 @@ class FlowPipePlotter:
         norm_vecs[6][x] = -1;  norm_vecs[6][y] = 1;
         norm_vecs[7][x] = -1;  norm_vecs[7][y] = -1;
 
-        fig, ax = plt.add_subplot(1,1)
+        fig, ax = plt.subplots(1)
 
         #Effort into renaming some of these vars
         comple_dim = [i for i in range(self.dim_sys) if i not in [x,y]] #dimensions not of x,y
@@ -102,8 +119,11 @@ class FlowPipePlotter:
 
             hs = HalfspaceIntersection(phase_intersect, center_pt) #Issues with facets and feasible point being coplanar.
             inter_x, inter_y = zip(*hs.intersections)
-            ax.set_xlabel('{}'.format(self.vars[x]))
-            ax.set_ylabel('{}'.format(self.vars[y]))
+            ax.set_xlabel('{}'.format(x_var))
+            ax.set_ylabel('{}'.format(y_var))
             ax.fill(inter_x, inter_y, 'b')
 
         fig.show()
+
+        phase_timer.end()
+        print("Plotting phase for dimensions {0}, {1} done -- Time Spent: {2}".format(x_var, y_var, phase_timer.duration))

@@ -1,7 +1,7 @@
 from sapo.reach import ReachSet
 from sapo.flowpipe import FlowPipePlotter
 
-from models.basic import Basic
+from models.basic.basic import Basic
 
 def test_plot_basic():
 

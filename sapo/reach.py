@@ -1,5 +1,4 @@
-import time
-
+from sapo.benchmark import Label, Benchmark
 from sapo.bundle import Bundle, BundleTransformer
 from sapo.flowpipe import FlowPipe
 
@@ -22,11 +21,13 @@ class ReachSet:
 
         for ind in range(time_steps):
 
-            start = time.time()
+            transf_timer = Benchmark.assign_timer(Label.TRANSF)
+            
+            transf_timer.start()
             trans_bund = trans.transform(flowpipe[ind])
-            end = time.time()
+            transf_timer.end()
 
-            print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, end - start))
+            print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
             flowpipe.append(trans_bund)
 
         return FlowPipe(flowpipe, self.model.vars)
