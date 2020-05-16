@@ -11,6 +11,9 @@ from sapo.parallelotope import Parallelotope
 import sapo.benchmark as Benchmark
 from sapo.benchmark import Label
 
+import sapo.log as Log
+from sapo.log import Debug
+
 class Bundle:
 
     def __init__(self, T, L, offu, offl, vars):
@@ -103,7 +106,7 @@ class BundleTransformer:
             p_min_coord = p.getMinPoint()
             p_max_coord = p.getMaxPoint()
 
-            #print('Min/Max points for Parall' , row_ind ,'   ', p_min_coord, p_max_coord, '\n')
+            Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
 
             #Calculate transformation subsitutions
             var_sub = []
@@ -124,7 +127,7 @@ class BundleTransformer:
 
                 bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
                 transf_bound_polyu = bound_polyu.subs(var_sub)
-                #print(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
+                #rint(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
 
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
@@ -136,13 +139,13 @@ class BundleTransformer:
 
                 bern_timer.end()
 
-                #print(''.join(["Upperbound: ", str((max_bern_coeffu, min_bern_coeffl)), "  Lowerbound:  ", str((min_bern_coeffu, max_bern_coeffl)), '\n' ]))
-                #print(''.join(['MaxB:', str(max_bern_coeffu),' MinB: ', str(min_bern_coeffu), 'for P: ', str(row), '\n']))
+                Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
+
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
                 p_new_offl[column] = max(-1 * min_bern_coeffu, p_new_offl[column])
                 #print(''.join(['Max:' str(p_new_offu[column]),' Min: ', str(p_new_offl[column]), 'for P: ', str(row), '\n']))
 
-        #print(''.join([' p_new_offu: ', str(p_new_offu), ' p_new_offl: ', str(p_new_offl), '\n']))
+        Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
         trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)
         canon_bund = trans_bund.canonize()
         return canon_bund

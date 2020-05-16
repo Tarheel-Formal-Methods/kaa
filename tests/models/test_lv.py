@@ -6,6 +6,6 @@ def test_LV():
 
     model = LotkaVolterra()
     mod_reach = ReachSet(model)
-    mod_flow = mod_reach.computeReachSet(100)
+    mod_flow = mod_reach.computeReachSet(50)
 
-    FlowPipePlotter(mod_flow).plot2DProj(1)
+    FlowPipePlotter(mod_flow).plot2DProj(0,1,2,3,4)

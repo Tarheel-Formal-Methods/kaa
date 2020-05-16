@@ -6,6 +6,6 @@ def test_Quad():
 
     model = Quadcopter()
     mod_reach = ReachSet(model)
-    mod_flow = mod_reach.computeReachSet(200)
+    mod_flow = mod_reach.computeReachSet(50)
 
-    FlowPipePlotter(mod_flow).plot2DProj(2)
+    FlowPipePlotter(mod_flow).plot2DProj(0,1,2)
