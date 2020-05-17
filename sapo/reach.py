@@ -1,6 +1,8 @@
 import sapo.benchmark as Benchmark
+import sapo.log as Log
 
 from sapo.benchmark import Label
+from sapo.log import Debug
 from sapo.bundle import Bundle, BundleTransformer
 from sapo.flowpipe import FlowPipe
 
@@ -25,6 +27,7 @@ class ReachSet:
 
             transf_timer = Benchmark.assign_timer(Label.TRANSF)
 
+            #Log.write_log(ind, Debug.STEP)
             transf_timer.start()
             trans_bund = trans.transform(flowpipe[ind])
             transf_timer.end()

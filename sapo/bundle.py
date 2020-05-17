@@ -95,18 +95,16 @@ class BundleTransformer:
     def transform(self, bund):
 
         p_new_offu = np.full(bund.num_direct, np.inf)
-        p_new_offl = np.full(bund.num_direct, -1 * np.inf)
+        p_new_offl = np.full(bund.num_direct, np.inf)
 
         #get parallelotope P_i
         for row_ind, row in enumerate(bund.T):
-            #print(''.join(['Row: ', str(row)]))
-
             #Calcuate minimum and maximum points of p_i
             p = bund.getParallelotope(row_ind)
             p_min_coord = p.getMinPoint()
             p_max_coord = p.getMaxPoint()
 
-            Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
+            #Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
 
             #Calculate transformation subsitutions
             var_sub = []
@@ -118,7 +116,6 @@ class BundleTransformer:
                 var_sub.append((var, transf_expr))
 
             for column in row.astype(int):
-                #get facet
                 curr_L = bund.L[column] #row in L
 
                 #compute polynomial \Lambda_i \cdot (f(v(x)))
@@ -127,7 +124,6 @@ class BundleTransformer:
 
                 bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
                 transf_bound_polyu = bound_polyu.subs(var_sub)
-                #rint(''.join(['uPoly: ', str(transf_bound_polyu),'  lPoly: ', str(transf_bound_polyl)]))
 
                 #Calculate min/max Bernstein coefficients
                 base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
@@ -139,13 +135,13 @@ class BundleTransformer:
 
                 bern_timer.end()
 
-                Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
+                #Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
 
                 p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
-                p_new_offl[column] = max(-1 * min_bern_coeffu, p_new_offl[column])
-                #print(''.join(['Max:' str(p_new_offu[column]),' Min: ', str(p_new_offl[column]), 'for P: ', str(row), '\n']))
+                p_new_offl[column] = min(-1 * min_bern_coeffu, p_new_offl[column])
 
-        Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
+        #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
+
         trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)
-        canon_bund = trans_bund.canonize()
-        return canon_bund
+        #canon_bund = trans_bund.canonize()
+        return trans_bund

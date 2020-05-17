@@ -4,6 +4,8 @@ import numpy as np
 from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
+import sapo.log as Log
+from sapo.log import Debug
 import sapo.benchmark as Benchmark
 from sapo.benchmark import Label
 
@@ -47,6 +49,7 @@ class FlowPipePlotter:
         t = np.arange(0, pipe_len, 1)
 
         for ax_ind, var_ind in enumerate(vars_tup):
+
             curr_var = self.vars[var_ind]
             plot_timer = Benchmark.assign_timer(Label.PLOT_PROJ)
 
@@ -60,9 +63,14 @@ class FlowPipePlotter:
             y_max_obj[var_ind] = -1
 
             for bund_ind, bund in enumerate(self.flowpipe):
+                Log.write_log(bund_ind,Debug.STEP)
+
                 bund_A, bund_b = bund.getIntersect()
+
                 y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b, bounds=(None,None))).fun
                 y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b, bounds=(None,None))).fun
+
+                Log.write_log(bund_ind, y_min[bund_ind], y_max[bund_ind], Debug.PROJ_MINMAX)
 
             ax[ax_ind].fill_between(t, y_min, y_max)
             ax[ax_ind].set_xlabel("t: time steps")

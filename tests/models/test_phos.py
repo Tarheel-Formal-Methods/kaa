@@ -1,11 +1,11 @@
 from sapo.reach import ReachSet
 from sapo.flowpipe import FlowPipePlotter
-from models.lotkavolterra import LotkaVolterra
+from models.phos import Phosphorelay
 
-def test_LV():
+def test_Phos():
 
-    model = LotkaVolterra()
+    model = Phosphorelay()
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(50)
 
-    FlowPipePlotter(mod_flow).plot2DPhase(0,1,2,3,4)
+    FlowPipePlotter(mod_flow).plot2DProj(0,1,2)

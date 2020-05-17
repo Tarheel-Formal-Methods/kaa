@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 '''
 Basic logger utility module for debugging purposes.
@@ -12,16 +12,22 @@ Basic logger utility module for debugging purposes.
 spaces = lambda x: ''.join('  ' for _ in range(x))
 
 class Debug(Enum):
-    MINMAX = 1 #For min/max point for parallelotopes
-    POLY = 2 #For min/max polynomals calculated for bernstein expansion
-    LOCAL_BOUND = 3 #Local bounds for each parallelotope for offl, offu
-    GLOBAL_BOUND = 4 #Final bound after considering all parallelotopes
+    STEP = 1
+    MINMAX = 2 #For min/max point for parallelotopes
+    POLY = 3 #For min/max polynomals calculated for bernstein expansion
+    LOCAL_BOUND = 4 #Local bounds for each parallelotope for offl, offu
+    GLOBAL_BOUND = 5 #Final bound after considering all parallelotopes
+    A_B = 6
+    PROJ_MINMAX = 7
 
 _Debug_Strings = {
 Debug.MINMAX: 'Min/Max points for Parall {0}: {1}    {2}',
 Debug.POLY:  'UPoly: {0}   LPoly: {1}',
 Debug.LOCAL_BOUND: 'MaxB: {0}   MinB: {1}    for P: {2}',
-Debug.GLOBAL_BOUND: 'New Offu: {0}    New Offl: {1}'
+Debug.GLOBAL_BOUND: 'New Offu: {0}    New Offl: {1}',
+Debug.STEP: 'STEP: {0} \n ----------------------------------------------',
+Debug.A_B: 'A:  {0}  \n\n  b: {1}',
+Debug.PROJ_MINMAX: 'STEP {0}: \n  MIN: {1}   MAX: {2}'
 }
 
 def write_log(*args):

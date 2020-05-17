@@ -8,18 +8,17 @@ class Parallelotope:
         self.A = A
         self.b = b
         self.vars = vars
-        #print(A,"      ",b)
 
     def getMinPoint(self):
 
         c = [1 for _ in enumerate(self.vars)]
-        var_min = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None))
+        var_min = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None), method='simplex')
 
         return var_min.x
 
     def getMaxPoint(self):
 
         c = [-1 for _ in enumerate(self.vars)]
-        var_max = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None))
+        var_max = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None), method='simplex')
 
         return var_max.x
