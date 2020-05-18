@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import linprog
+from sapo.lputil import minLinProg, maxLinProg
 
 
 class Parallelotope:
@@ -8,17 +8,14 @@ class Parallelotope:
         self.A = A
         self.b = b
         self.vars = vars
+        self.c = [1 for _ in enumerate(self.vars)]
 
     def getMinPoint(self):
 
-        c = [1 for _ in enumerate(self.vars)]
-        var_min = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None), method='simplex')
-
+        var_min = minLinProg(self.c, self.A, self.b)
         return var_min.x
 
     def getMaxPoint(self):
 
-        c = [-1 for _ in enumerate(self.vars)]
-        var_max = linprog(c, A_ub=self.A, b_ub=self.b, bounds=(None,None), method='simplex')
-
+        var_max = maxLinProg(self.c, self.A, self.b)
         return var_max.x

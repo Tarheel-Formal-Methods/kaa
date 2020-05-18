@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from scipy.optimize import linprog
 from scipy.spatial import HalfspaceIntersection
 
 import sapo.log as Log
@@ -9,6 +8,7 @@ from sapo.log import Debug
 import sapo.benchmark as Benchmark
 from sapo.benchmark import Label
 
+from sapo.lputil import minLinProg, maxLinProg
 class FlowPipe:
 
     def __init__(self, flowpipe, vars):
@@ -56,19 +56,16 @@ class FlowPipePlotter:
             y_min = np.empty(pipe_len)
             y_max = np.empty(pipe_len)
 
-            y_min_obj = [0 for _ in self.vars]
-            y_min_obj[var_ind] = 1
-
-            y_max_obj = [0 for _ in self.vars]
-            y_max_obj[var_ind] = -1
+            y_obj = [0 for _ in self.vars]
+            y_obj[var_ind] = 1
 
             for bund_ind, bund in enumerate(self.flowpipe):
                 Log.write_log(bund_ind,Debug.STEP)
 
                 bund_A, bund_b = bund.getIntersect()
 
-                y_min[bund_ind] = (linprog(y_min_obj, bund_A, bund_b, bounds=(None,None))).fun
-                y_max[bund_ind] = -1 * (linprog(y_max_obj, bund_A, bund_b, bounds=(None,None))).fun
+                y_min[bund_ind] = (minLinProg(y_obj, bund_A, bund_b)).fun
+                y_max[bund_ind] = (maxLinProg(y_obj, bund_A, bund_b)).fun
 
                 Log.write_log(bund_ind, y_min[bund_ind], y_max[bund_ind], Debug.PROJ_MINMAX)
 
@@ -106,14 +103,14 @@ class FlowPipePlotter:
         comple_dim = [i for i in range(self.dim_sys) if i not in [x,y]] #dimensions not of x,y
 
         c = [0 for _ in range(self.dim_sys + 1)]
-        c[-1] = -1
+        c[-1] = 1
 
         for bund in self.flowpipe:
             bund_A, bund_b = bund.getIntersect()
 
             bund_off = np.empty([len(norm_vecs),1])
             for i in range(len(norm_vecs)):
-                bund_off[i] = linprog(np.negative(norm_vecs[i]), bund_A, bund_b, bounds=(None,None)).fun
+                bund_off[i] = (maxLinProg(norm_vecs[i], bund_A, bund_b)).fun
 
             phase_intersect = np.hstack((norm_vecs, bund_off))  #remove irrelevant dimensions. Mostly doing this to make HalfspaceIntersection happy.
             phase_intersect = np.delete(phase_intersect, comple_dim, axis=1)
@@ -123,7 +120,7 @@ class FlowPipePlotter:
             center_A = np.hstack((norm_vecs, row_norm))
 
             #print(np.negative(bund_off.T))
-            center_pt = linprog(c, A_ub=center_A, b_ub=np.negative(bund_off.T), bounds=(None,None)).x
+            center_pt = (maxLinProg(c, center_A, np.negative(bund_off.T))).x
             center_pt = np.asarray([b for b_i, b in enumerate(center_pt) if b_i in [x, y]])
 
             hs = HalfspaceIntersection(phase_intersect, center_pt) #Issues with facets and feasible point being coplanar.

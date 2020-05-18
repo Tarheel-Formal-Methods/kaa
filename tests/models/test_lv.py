@@ -8,4 +8,4 @@ def test_LV():
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(50)
 
-    FlowPipePlotter(mod_flow).plot2DPhase(0,1,2,3,4)
+    FlowPipePlotter(mod_flow).plot2DProj(0,1)
