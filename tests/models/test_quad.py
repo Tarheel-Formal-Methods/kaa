@@ -8,4 +8,4 @@ def test_Quad():
     mod_reach = ReachSet(model)
     mod_flow = mod_reach.computeReachSet(300)
 
-    FlowPipePlotter(mod_flow).plot2DProj(2)
+    FlowPipePlotter(mod_flow).plot2DProj(2,5,13)
