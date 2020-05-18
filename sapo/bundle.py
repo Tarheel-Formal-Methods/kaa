@@ -1,12 +1,12 @@
 import numpy as np
 import sympy as sp
-from scipy.optimize import linprog
 
 from operator import add
 from functools import reduce
 
 from sapo.bernstein import BernsteinBaseConverter
 from sapo.parallelotope import Parallelotope
+from sapo.lputil import minLinProg, maxLinProg
 
 import sapo.benchmark as Benchmark
 from sapo.benchmark import Label
@@ -63,8 +63,8 @@ class Bundle:
 
         for row_ind, row in enumerate(self.L):
 
-            canon_offu[row_ind] = -1 * (linprog(np.negative(row), A, b, bounds=(None,None))).fun
-            canon_offl[row_ind] = -1 * (linprog(row, A, b, bounds=(None,None))).fun
+            canon_offu[row_ind] = (maxLinProg(row, A, b)).fun
+            canon_offl[row_ind] = (maxLinProg(np.negative(row), A, b)).fun
 
         return Bundle(self.T, self.L, canon_offu, canon_offl, self.vars)
 
@@ -143,5 +143,5 @@ class BundleTransformer:
         #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
 
         trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)
-        #canon_bund = trans_bund.canonize()
-        return trans_bund
+        canon_bund = trans_bund.canonize()
+        return canon_bund
