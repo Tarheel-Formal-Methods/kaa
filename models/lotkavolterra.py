@@ -26,20 +26,20 @@ class LotkaVolterra(Model):
         dyns = [dx1, dx2, dx3, dx4, dx5]
 
         num_dirs = 7
-        num_temps = 3
+        num_temps = 1
 
         L = np.zeros([num_dirs,dim_sys])
         T = np.zeros([num_temps,dim_sys])
 
         for i in range(dim_sys):
             L[i][i] = 1
-            
+
         L[5][0] = 1; L[5][1] = 1; L[5][2] = 1;
         L[6][3] = -1; L[6][4] = 1; L[6][0] = -1;
 
         T[0][0] = 0; T[0][1] = 1; T[0][2] = 2; T[0][3] = 3; T[0][4] = 4;
-        T[1][0] = 5; T[1][1] = 6; T[1][2] = 1; T[1][3] = 2; T[1][4] = 3;
-        T[2][0] = 5; T[2][1] = 6; T[2][2] = 2; T[2][3] = 3; T[2][4] = 4;
+        #T[1][0] = 5; T[1][1] = 6; T[1][2] = 1; T[1][3] = 2; T[1][4] = 3;
+        #T[2][0] = 5; T[2][1] = 6; T[2][2] = 2; T[2][3] = 3; T[2][4] = 4;
 
         offu = np.zeros(num_dirs)
         offl = np.zeros(num_dirs)

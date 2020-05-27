@@ -22,6 +22,10 @@ Average Bundle Transformation Duration: 0.13580493330955506
 Average Bernstein Computation Duration: 0.008317003051439922
 Average Phase Computation Duration: 0.392946720123291
 
+1 Template / 5 directions
+
+Total Duration: 69.30552315711975
+
 Quad_Proj on h, w, H_i
 
 1 template / 17 dir

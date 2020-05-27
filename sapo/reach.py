@@ -8,8 +8,6 @@ from sapo.flowpipe import FlowPipe
 
 """
 Object handling all reachable flowpipe computations.
-TODO
-    - Proper debugging framework.
 """
 class ReachSet:
 
@@ -20,16 +18,14 @@ class ReachSet:
     def computeReachSet(self, time_steps):
 
         initial_set = self.model.bundle
-        trans = BundleTransformer(self.model.f)
+        transformer = BundleTransformer(self.model.f)
         flowpipe = [initial_set]
 
         for ind in range(time_steps):
 
             transf_timer = Benchmark.assign_timer(Label.TRANSF)
-
-            #Log.write_log(ind, Debug.STEP)
             transf_timer.start()
-            trans_bund = trans.transform(flowpipe[ind])
+            trans_bund = transformer.transform(flowpipe[ind])
             transf_timer.end()
 
             print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
