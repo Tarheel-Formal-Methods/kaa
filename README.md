@@ -10,6 +10,6 @@ Kaa relies only on the following packages:
 - numpy
 - swiglpk
 
-#Running sample models.
+# Running sample models.
 
 Run the Juypter notebook named kaa-intro to run a provided sample of models. The notebook contains all of the relevant code necessary to begin plotting the reachable sets and phase plots of a variety of models.
