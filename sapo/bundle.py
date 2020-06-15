@@ -104,8 +104,33 @@ class BundleTransformer:
     """
     def transform(self, bund):
 
-        p_new_offu = np.full(bund.num_direct, np.inf)
-        p_new_offl = np.full(bund.num_direct, np.inf)
+        new_offu = np.full(bund.num_direct, np.inf)
+        new_offl = np.full(bund.num_direct, np.inf)
+
+        #Print bernstein computations. Separate into subroutine taking paralleltope bundle (L,offu,offl) and c^T \cdot f as parameters and outputs max/min.
+        for row_ind, curr_L in enumerate(bund.L):
+
+            max_val, min_val = self.findExtrema(bund, curr_L)
+            print("For: {0}  Bernstein Comp :Max:{1} ,  Min: {2}".format(row_ind, max_val, min_val))
+            new_offu[row_ind] = min(max_val, new_offu[row_ind])
+            new_offl[row_ind] = min(-1 * min_val, new_offl[row_ind])
+
+        #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
+        print("New Offu: {0}   New Offp = {1}".format(new_offu[2], new_offl[2]))
+        trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
+        #canon_bund = trans_bund.canonize()
+        return trans_bund
+
+    """
+    Returns extrema of c^T \cdot f over the parallelotope bundle, P.
+    @params bund: parallelotope bundle
+            c: the column vector of coefficients for c^T \cdot f
+    """
+    def findExtrema(self, bund, c):
+
+        'Find intersecting unitbox'
+        min_coord = [ -1 * np.inf for _ in range(bund.sys_dim) ]
+        max_coord = [ np.inf for _ in range(bund.sys_dim) ]
 
         for row_ind, row in enumerate(bund.T):
             'Calcuate minimum and maximum points of p_i'
@@ -113,41 +138,33 @@ class BundleTransformer:
             p_min_coord = p.getMinPoint()
             p_max_coord = p.getMaxPoint()
 
-            #Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
+            max_coord = [ min(p_max_coord[i], max_coord[i]) for i in range(bund.sys_dim) ]
+            min_coord = [ max(p_min_coord[i], min_coord[i]) for i in range(bund.sys_dim) ]
 
-            'Calculate substitutions required to map unitbox over our parallelotope'
-            var_sub = []
-            for var_ind, var in enumerate(bund.vars):
-                p_min = p_min_coord[var_ind] #linprog opt results
-                p_max = p_max_coord[var_ind]
+        #Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
+        #print("Parallelotope:  Max: {0} ,  Min: {1}".format(p_max_coord[2], p_min_coord[2]))
 
-                transf_expr = (p_max - p_min) * var + p_min
-                var_sub.append((var, transf_expr))
+        'Calculate substitutions required to map unitbox over our parallelotope'
+        var_sub = []
+        for var_ind, var in enumerate(bund.vars):
+            var_min = min_coord[var_ind] #linprog opt results
+            var_max = max_coord[var_ind]
 
-            for column in row.astype(int):
-                curr_L = bund.L[column] #row in L
+            transf_expr = (var_max - var_min) * var + var_min
+            var_sub.append((var, transf_expr))
 
-                'compute polynomial \Lambda_i \cdot (f(v(x)))'
-                bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(self.f) ]
+        'compute polynomial \Lambda_i \cdot (f(v(x)))'
+        bound_polyu = [ c[func_ind] * func for func_ind, func in enumerate(self.f) ]
 
-                bound_polyu = reduce(add, bound_polyu)
-                transf_bound_polyu = bound_polyu.subs(var_sub)
+        bound_polyu = reduce(add, bound_polyu)
+        transf_bound_polyu = bound_polyu.subs(var_sub)
 
-                'Calculate min/max Bernstein coefficients'
-                base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
+        'Calculate min/max Bernstein coefficients'
+        base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
 
-                bern_timer = Benchmark.assign_timer(Label.BERN)
-                bern_timer.start()
-                max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
-                bern_timer.end()
+        bern_timer = Benchmark.assign_timer(Label.BERN)
+        bern_timer.start()
+        max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
+        bern_timer.end()
 
-                #Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
-                'Select optimal offset'
-                p_new_offu[column] = min(max_bern_coeffu, p_new_offu[column])
-                p_new_offl[column] = min(-1 * min_bern_coeffu, p_new_offl[column])
-
-        #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
-
-        trans_bund = Bundle(bund.T, bund.L, p_new_offu, p_new_offl, bund.vars)
-        canon_bund = trans_bund.canonize()
-        return canon_bund
+        return max_bern_coeffu, min_bern_coeffu

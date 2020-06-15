@@ -27,7 +27,7 @@ class BernsteinBaseConverter:
             bern_coeff.append(self._computeIthBernCoeff(monom))
 
         return max(bern_coeff), min(bern_coeff)
-        
+
     """
     Compute the ith Bernstein coefficient.
     """
@@ -60,7 +60,7 @@ class BernsteinBaseConverter:
 
         monom_tups = self.poly.monoms()
         degree = []
-
+        
         for var_index, _ in enumerate(self.vars):
              var_deg = max([ monom[var_index] for monom in monom_tups])
              degree.append(var_deg)
@@ -73,8 +73,7 @@ class BernsteinBaseConverter:
         expr = reduce(mul, var_monom)
 
         monomial = sp.Poly(expr, self.vars)
-
         return monomial.as_expr()
 
     def _choose(self, n, r):
-        return factorial(n) / (factorial(r)*factorial(n-r))
+        return factorial(n) // (factorial(r)*factorial(n-r))

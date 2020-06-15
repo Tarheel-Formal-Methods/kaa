@@ -91,10 +91,12 @@ class FlowPipePlotter:
 
         x_var, y_var = self.vars[x], self.vars[y]
 
-        norm_vecs = np.zeros([4,self.dim_sys])
+        norm_vecs = np.zeros([6,self.dim_sys])
 
         norm_vecs[0][x] = 1; norm_vecs[1][y] = 1; #Testing support functions for these normals for now
         norm_vecs[2][x] = -1; norm_vecs[3][y] = -1;
+        norm_vecs[4][x] = 1; norm_vecs[4][y] = 1;
+        norm_vecs[5][x] = -1; norm_vecs[5][y] = -1;
 
         fig, ax = plt.subplots(1)
         comple_dim = [i for i in range(self.dim_sys) if i not in [x,y]]

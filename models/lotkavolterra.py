@@ -26,7 +26,7 @@ class LotkaVolterra(Model):
         dyns = [dx1, dx2, dx3, dx4, dx5]
 
         num_dirs = 7
-        num_temps = 1
+        num_temps = 2
 
         L = np.zeros([num_dirs,dim_sys])
         T = np.zeros([num_temps,dim_sys])

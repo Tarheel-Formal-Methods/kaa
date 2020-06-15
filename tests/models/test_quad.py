@@ -13,9 +13,9 @@ def test_Quad():
     timer = Benchmark.assign_timer(Label.TOTAL)
     timer.start()
 
-    mod_flow = mod_reach.computeReachSet(300)
+    mod_flow = mod_reach.computeReachSet(4)
 
     timer.end()
 
-    FlowPipePlotter(mod_flow).plot2DProj(2,5,13)
+    FlowPipePlotter(mod_flow).plot2DProj(2)
     Benchmark.generate_stats()

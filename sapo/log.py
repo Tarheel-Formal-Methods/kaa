@@ -12,13 +12,13 @@ Basic logger utility module for debugging purposes.
 spaces = lambda x: ''.join('  ' for _ in range(x))
 
 class Debug(Enum):
-    STEP = 1
-    MINMAX = 2 #For min/max point for parallelotopes
-    POLY = 3 #For min/max polynomals calculated for bernstein expansion
-    LOCAL_BOUND = 4 #Local bounds for each parallelotope for offl, offu
-    GLOBAL_BOUND = 5 #Final bound after considering all parallelotopes
-    A_B = 6
-    PROJ_MINMAX = 7
+    STEP = auto()
+    MINMAX = auto() #For min/max point for parallelotopes
+    POLY = auto() #For min/max polynomals calculated for bernstein expansion
+    LOCAL_BOUND = auto() #Local bounds for each parallelotope for offl, offu
+    GLOBAL_BOUND = auto() #Final bound after considering all parallelotopes
+    A_B = auto()
+    PROJ_MINMAX = auto()
 
 _Debug_Strings = {
 Debug.MINMAX: 'Min/Max points for Parall {0}: {1}    {2}',

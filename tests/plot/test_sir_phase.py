@@ -8,5 +8,5 @@ def test_phase_sir():
     sir_mod = SIR()
     sir_reach = ReachSet(sir_mod)
 
-    flowpipe = sir_reach.computeReachSet(100)
+    flowpipe = sir_reach.computeReachSet(300)
     FlowPipePlotter(flowpipe).plot2DPhase(0,1)
