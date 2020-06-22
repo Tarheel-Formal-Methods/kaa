@@ -9,7 +9,6 @@ class BernsteinBaseConverter:
 
     def __init__(self, poly, vars):
         self.poly = sp.Poly(poly, vars)
-        self.coeffs = self.poly.coeffs()
         self.vars = vars
         self.var_num = len(vars)
         self.degree = self._getDegree()
@@ -26,6 +25,7 @@ class BernsteinBaseConverter:
         for monom in self.monom_list:
             bern_coeff.append(self._computeIthBernCoeff(monom))
 
+        #print(bern_coeff, self.poly)
         return max(bern_coeff), min(bern_coeff)
 
     """
@@ -60,7 +60,7 @@ class BernsteinBaseConverter:
 
         monom_tups = self.poly.monoms()
         degree = []
-        
+
         for var_index, _ in enumerate(self.vars):
              var_deg = max([ monom[var_index] for monom in monom_tups])
              degree.append(var_deg)

@@ -1,0 +1,104 @@
+
+Step 1
+---------------
+Computed Max Coeff:  0.21  Min Coeff: -0.2
+Computed Max Coeff:  2.1979  Min Coeff: 1.812
+
+Step 2
+---------------
+Computed Max Coeff:  0.210729  Min Coeff: -0.200716
+Computed Max Coeff:  0.210729  Min Coeff: -0.200716
+
+Step 3
+---------------
+Computed Max Coeff:  0.212111  Min Coeff: -0.202075
+Computed Max Coeff:  0.212101  Min Coeff: -0.202085
+
+Step 4
+---------------
+Computed Max Coeff:  0.214071  Min Coeff: -0.20402
+Computed Max Coeff:  0.214052  Min Coeff: -0.204039
+
+Step 5
+---------------
+Computed Max Coeff:  0.216547  Min Coeff: -0.206491
+Computed Max Coeff:  0.21652  Min Coeff: -0.206518
+
+Step 6
+---------------
+Computed Max Coeff:  0.219486  Min Coeff: -0.209432
+Computed Max Coeff:  0.219452  Min Coeff: -0.209466
+
+
+
+ U: Max: 0.210000000000000     Min: -0.200000000000000
+
+
+ U: Max: 2.19790000000000     Min: 1.81200000000000
+
+
+ New Offu: 0.21   New Offp = -0.2
+
+Computed Step 0 -- Time Elapsed: 0.379504919052124 sec
+
+ U: Max: 0.210728636363636     Min: -0.200716018181818
+
+
+ U: Max: 0.210728636363636     Min: -0.210616018181818
+
+
+ New Offu: 0.21072863636363637   New Offp = -0.2106160181818182
+
+Computed Step 1 -- Time Elapsed: 0.3561251163482666 sec
+
+ U: Max: 0.212099782958678     Min: -0.211974738188430
+
+
+ U: Max: 0.212098656776860     Min: -0.212086230188430
+
+
+ New Offu: 0.21209865677685952   New Offp = -0.21208623018842976
+
+Computed Step 2 -- Time Elapsed: 0.3369929790496826 sec
+
+ U: Max: 0.214044132356778     Min: -0.214021454394978
+
+
+ U: Max: 0.214044008090894     Min: -0.214033756717523
+
+
+ New Offu: 0.21404400809089408   New Offp = -0.2140337567175231
+
+Computed Step 3 -- Time Elapsed: 0.3351309299468994 sec
+
+ U: Max: 0.216505167405177     Min: -0.216485731073461
+
+
+ U: Max: 0.216505064891444     Min: -0.216495879933099
+
+
+ New Offu: 0.21650506489144372   New Offp = -0.21649587993309868
+
+Computed Step 4 -- Time Elapsed: 0.37137389183044434 sec
+
+ U: Max: 0.219428095772092     Min: -0.219410666649389
+
+
+ U: Max: 0.219428003922509     Min: -0.219419759758151
+
+
+ New Offu: 0.21942800392250889   New Offp = -0.2194197597581506
+
+Computed Step 5 -- Time Elapsed: 0.37535905838012695 sec
+
+ U: Max: 0.222764321860662     Min: -0.222748671093669
+
+
+ U: Max: 0.222764239419019     Min: -0.222756832816384
+
+
+ New Offu: 0.2227642394190189   New Offp = -0.22275683281638398
+
+Computed Step 6 -- Time Elapsed: 0.3638911247253418 sec
+
+ U: Max: 0.226469987483658     Min: -0.226455920012020

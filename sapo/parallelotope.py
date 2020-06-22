@@ -8,14 +8,23 @@ class Parallelotope:
         self.A = A
         self.b = b
         self.vars = vars
-        self.c = [1 for _ in enumerate(self.vars)]
 
     def getMinPoint(self):
 
-        var_min = minLinProg(self.c, self.A, self.b)
-        return var_min.x
+        var_min = []
+        for var_ind,_ in enumerate(self.vars):
+            c = [0 for _ in enumerate(self.vars)]
+            c[var_ind] = 1
+            min_point = minLinProg(c, self.A, self.b).fun
+            var_min.append(min_point)
+        return var_min
 
     def getMaxPoint(self):
 
-        var_max = maxLinProg(self.c, self.A, self.b)
-        return var_max.x
+        var_max = []
+        for var_ind,_ in enumerate(self.vars):
+            c = [0 for _ in enumerate(self.vars)]
+            c[var_ind] = 1
+            max_point = maxLinProg(c, self.A, self.b).fun
+            var_max.append(max_point)
+        return var_max

@@ -99,7 +99,7 @@ class BundleTransformer:
         self.f = f
 
     """
-    Transforms the bundle according to the dyanmics governing the system. (dicatated by self.f)
+    Transforms the bundle according to the dyanmics governing the system. (dictated by self.f)
     @params bund: Bundle object to be transformed under dynamics.
     """
     def transform(self, bund):
@@ -111,15 +111,15 @@ class BundleTransformer:
         for row_ind, curr_L in enumerate(bund.L):
 
             max_val, min_val = self.findExtrema(bund, curr_L)
-            print("For: {0}  Bernstein Comp :Max:{1} ,  Min: {2}".format(row_ind, max_val, min_val))
+            #print("For: {0}  Bernstein Comp :Max:{1} ,  Min: {2}".format(row_ind, max_val, min_val))
             new_offu[row_ind] = min(max_val, new_offu[row_ind])
             new_offl[row_ind] = min(-1 * min_val, new_offl[row_ind])
 
         #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
-        print("New Offu: {0}   New Offp = {1}".format(new_offu[2], new_offl[2]))
+        print("\n New Offu: {0}   New Offp = {1}\n".format(new_offu[2], new_offl[2]))
         trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
-        #canon_bund = trans_bund.canonize()
-        return trans_bund
+        canon_bund = trans_bund.canonize()
+        return canon_bund
 
     """
     Returns extrema of c^T \cdot f over the parallelotope bundle, P.
@@ -131,6 +131,7 @@ class BundleTransformer:
         'Find intersecting unitbox'
         min_coord = [ -1 * np.inf for _ in range(bund.sys_dim) ]
         max_coord = [ np.inf for _ in range(bund.sys_dim) ]
+
 
         for row_ind, row in enumerate(bund.T):
             'Calcuate minimum and maximum points of p_i'
@@ -150,6 +151,7 @@ class BundleTransformer:
             var_min = min_coord[var_ind] #linprog opt results
             var_max = max_coord[var_ind]
 
+            #print((var_max,var_min))
             transf_expr = (var_max - var_min) * var + var_min
             var_sub.append((var, transf_expr))
 
@@ -158,6 +160,7 @@ class BundleTransformer:
 
         bound_polyu = reduce(add, bound_polyu)
         transf_bound_polyu = bound_polyu.subs(var_sub)
+        #print(transf_bound_polyu)
 
         'Calculate min/max Bernstein coefficients'
         base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)

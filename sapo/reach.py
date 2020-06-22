@@ -28,7 +28,7 @@ class ReachSet:
             trans_bund = transformer.transform(flowpipe[ind])
             transf_timer.end()
 
-            #print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
+            print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
             flowpipe.append(trans_bund)
 
         return FlowPipe(flowpipe, self.model.vars)

@@ -41,13 +41,13 @@ class Quadcopter(Model):
            tautheta = 0.0003*uI + 0.0005*u - 0.0018*theta - 0.0004*q;
            taupsi = -0.0003*psiI - 0.0006*psi - 0.0003*r;
 
-           dpn = pn + ((u*(2*q0v**2) + 2*q1v**2 - 1) - v*(2*q0v*q3v - 2*q1v*q2v ) + w*(2*q0v*q2v + 2*q1v*q3v ))*delta;
-           dpe = pe + ((v*(2*q0v**2) + 2*(q2v**2) - 1) + u*(2*q0v*q3v + 2*q1v*q2v ) - w*(2*q0v*q1v - 2*q2v*q3v ))*delta;
+           dpn = pn + (u*(2*q0v**2 + 2*q1v**2 - 1) - v*(2*q0v*q3v - 2*q1v*q2v ) + w*(2*q0v*q2v + 2*q1v*q3v ))*delta;
+           dpe = pe + (v*(2*q0v**2 + 2*(q2v**2) - 1) + u*(2*q0v*q3v + 2*q1v*q2v ) - w*(2*q0v*q1v - 2*q2v*q3v ))*delta;
            dh = h + (w*(2*(q0v**2) + 2*(q3v**2) - 1) - u*(2*q0v*q2v - 2*q1v*q3v ) + v*(2*q0v*q1v + 2*q2v*q3v ))*delta;
 
            du = u + (r*v - q*w - g*(2*q0v*q2v - 2*q1v*q3v ))*delta;
            dv = v + (p*w - r*u + g*(2*q0v*q1v + 2*q2v*q3v ))*delta;
-           dw = w + (q*u - p*v -F/m + g*(2*(q0v**2) + 2*(q3v**2) - 1 ))*delta;
+           dw = w + (q*u - p*v - F/m + g*(2*(q0v**2) + 2*(q3v**2) - 1 ))*delta;
 
            dq0v = q0v +(-(q1v/2)*p - (q2v/2)*q - (q3v/2)*r)*delta;
            dq1v = q1v + ((q0v/2)*p - (q3v/2)*q + (q2v/2)*r)*delta;
@@ -65,29 +65,29 @@ class Quadcopter(Model):
 
            dyns = [dpn,dpe,dh,du,dv,dw,dq0v,dq1v,dq2v,dq3v,dp,dq,dr,dhI,duI,dvI,dpsiI]
 
-           num_dirs = 18
-           num_temp = 2
+           num_dirs = 17
+           num_temp = 1
 
            L = np.zeros([num_dirs,dim_sys])
 
            for i in range(dim_sys):
                L[i][i] = 1
 
-           L[17][2] = 0.5; L[17][5] = 0.5; L[17][6] = 0.5; L[17][15] = 0.25;
+           #L[17][2] = 0.5; L[17][5] = 0.5; L[17][6] = 0.5; L[17][15] = 0.25;
 
            T = np.zeros([num_temp, dim_sys]);
            for i in range(dim_sys):
                T[0][i] = i
-               T[1][i] = i
+               #T[1][i] = i
 
-           T[1][5] = 17
+           #T[1][5] = 17
 
            offu = np.zeros(num_dirs);
            offl = np.zeros(num_dirs);
 
            offu[2] = 0.21; offl[2] = -0.20;
            offu[6] = 1; offl[6] = -1;
-           offu[17] = 100; offl[17] = 100;
+           #offu[17] = 100; offl[17] = 100;
 
            b = Bundle(T, L, offu, offl, vars)
            super().__init__(b, dyns, vars)

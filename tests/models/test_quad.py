@@ -13,7 +13,7 @@ def test_Quad():
     timer = Benchmark.assign_timer(Label.TOTAL)
     timer.start()
 
-    mod_flow = mod_reach.computeReachSet(4)
+    mod_flow = mod_reach.computeReachSet(300)
 
     timer.end()
 
