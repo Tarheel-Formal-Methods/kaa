@@ -3,12 +3,15 @@ import numpy as np
 
 from scipy.spatial import HalfspaceIntersection
 
-import sapo.log as Log
-from sapo.log import Debug
-import sapo.benchmark as Benchmark
-from sapo.benchmark import Label
-from sapo.lputil import minLinProg, maxLinProg
+import kaa.log as Log
+from kaa.log import Debug
+import kaa.benchmark as Benchmark
+from kaa.benchmark import Label
+from kaa.lputil import minLinProg, maxLinProg
 
+"""
+Object encapsulating flowpipe data.
+"""
 class FlowPipe:
 
     def __init__(self, flowpipe, vars):
@@ -35,38 +38,40 @@ class FlowPipePlotter:
     """
     Plots projection of reachable set against time t.
     @params (vars_tup): tuple containing indices of variables to be plotted.
-    Only plots to on-screen figure in its current state.
+    Only plots to an on-screen figure in its current state.
     """
 
     def plot2DProj(self, *vars_tup):
         num_var = len(vars_tup)
         pipe_len = len(self.flowpipe)
 
+        # For consistency of loop below.
         fig, ax = plt.subplots(1,num_var)
-        ax = [ax] if num_var == 1 else ax #For consistency of loop below.
+        ax = [ax] if num_var == 1 else ax
 
+        # Time step vector for plotting.
         t = np.arange(0, pipe_len, 1)
+
         for ax_ind, var_ind in enumerate(vars_tup):
 
             curr_var = self.vars[var_ind]
 
             plot_timer = Benchmark.assign_timer(Label.PLOT_PROJ)
 
+            # Vector of minimum and maximum points of the polytope represented by parallelotope bundle
             y_min, y_max = np.empty(pipe_len), np.empty(pipe_len)
 
-            'Initialize objective function'
+            # Initialize objective function
             y_obj = [0 for _ in self.vars]
             y_obj[var_ind] = 1
 
+            # Calculate the minimum and maximum points through LPs for every iteration of the bundle.
             for bund_ind, bund in enumerate(self.flowpipe):
-                Log.write_log(bund_ind,Debug.STEP)
 
                 bund_A, bund_b = bund.getIntersect()
 
                 y_min[bund_ind] = minLinProg(y_obj, bund_A, bund_b).fun
                 y_max[bund_ind] = maxLinProg(y_obj, bund_A, bund_b).fun
-
-                Log.write_log(bund_ind, y_min[bund_ind], y_max[bund_ind], Debug.PROJ_MINMAX)
 
             ax[ax_ind].fill_between(t, y_min, y_max)
             ax[ax_ind].set_xlabel("t: time steps")
@@ -80,20 +85,20 @@ class FlowPipePlotter:
 
     """
     Plots phase between two variables of dynamical system.
-    @params x: x-axis of desired phase
-            y: y-axis of desired phase
+    @params x: index of variable to be plotted as x-axis of desired phase
+            y: index of variable to be plotted as y-axis of desired phase
     """
     def plot2DPhase(self, x, y):
 
-        #Define the following projected normal vectors
+
         phase_timer = Benchmark.assign_timer(Label.PLOT_PHASE)
         phase_timer.start()
 
         x_var, y_var = self.vars[x], self.vars[y]
 
+        # Define the following projected normal vectors
         norm_vecs = np.zeros([6,self.dim_sys])
-
-        norm_vecs[0][x] = 1; norm_vecs[1][y] = 1; #Testing support functions for these normals for now
+        norm_vecs[0][x] = 1; norm_vecs[1][y] = 1;
         norm_vecs[2][x] = -1; norm_vecs[3][y] = -1;
         norm_vecs[4][x] = 1; norm_vecs[4][y] = 1;
         norm_vecs[5][x] = -1; norm_vecs[5][y] = -1;
@@ -113,10 +118,11 @@ class FlowPipePlotter:
             for i in range(len(norm_vecs)):
                 bund_off[i] = minLinProg(np.negative(norm_vecs[i]), bund_A, bund_b).fun
 
-            phase_intersect = np.hstack((norm_vecs, bund_off))  #remove irrelevant dimensions. Mostly doing this to make HalfspaceIntersection happy.
+            # remove irrelevant dimensions. Mostly doing this to make HalfspaceIntersection happy.
+            phase_intersect = np.hstack((norm_vecs, bund_off))
             phase_intersect = np.delete(phase_intersect, comple_dim, axis=1)
 
-            #compute center of intersection
+            # Compute Chebyshev center of intersection.
             row_norm = np.reshape(np.linalg.norm(norm_vecs, axis=1), (norm_vecs.shape[0],1))
             center_A = np.hstack((norm_vecs, row_norm))
 
@@ -124,6 +130,7 @@ class FlowPipePlotter:
             center_pt = maxLinProg(c, center_A, list(neg_bund_off.flat)).x
             center_pt = np.asarray([b for b_i, b in enumerate(center_pt) if b_i in [x, y]])
 
+            #Run scipy.spatial.HalfspaceIntersection.
             hs = HalfspaceIntersection(phase_intersect, center_pt)
             inter_x, inter_y = zip(*hs.intersections)
             ax.set_xlabel('{}'.format(x_var))

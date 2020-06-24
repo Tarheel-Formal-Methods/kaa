@@ -1,8 +1,8 @@
-from sapo.reach import ReachSet
-from sapo.flowpipe import FlowPipePlotter
+from kaa.reach import ReachSet
+from kaa.flowpipe import FlowPipePlotter
 
 from models.basic.basic import Basic
-import sapo.benchmark as Benchmark
+import kaa.benchmark as Benchmark
 
 def test_plot_basic():
 

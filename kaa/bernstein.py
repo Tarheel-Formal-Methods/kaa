@@ -12,11 +12,12 @@ class BernsteinBaseConverter:
         self.vars = vars
         self.var_num = len(vars)
         self.degree = self._getDegree()
+
+        # List of all relevant monomials required to calculate the Bernstein coefficients.
         self.monom_list = self._computeLowerDeg(self.degree)
 
     """
-    Computes the maximum and minimum Bernstein coefficients for self.poly
-    Notes: This can be most likely improved through an improved method through matrices.
+    Computes and returns the maximum and minimum Bernstein coefficients for self.poly.
     """
     def computeBernCoeff(self):
 
@@ -29,7 +30,8 @@ class BernsteinBaseConverter:
         return max(bern_coeff), min(bern_coeff)
 
     """
-    Compute the ith Bernstein coefficient.
+    Computes and returns the ith Bernstein coefficient.
+    @params i: the degree of the desired Bernstein polynomial.
     """
     def _computeIthBernCoeff(self, i):
 
@@ -49,13 +51,21 @@ class BernsteinBaseConverter:
 
         return reduce(add, bern_sum_list)
 
+    """
+    Computes the degrees lower than supplied index.
+    Returns a list of all lower degrees.
+    @params i: desired degree
+    """
     def _computeLowerDeg(self, i):
 
         assert len(i) == len(self.degree)
 
-        iterators = [range(idx+1) for idx in i]
+        iterators = [ range(idx+1) for idx in i ]
         return list(product(*iterators))
 
+    """
+    Returns the total degree of self.poly
+    """
     def _getDegree(self):
 
         monom_tups = self.poly.monoms()
@@ -67,13 +77,22 @@ class BernsteinBaseConverter:
 
         return degree
 
+    """
+    Returns the sympy monomial of specific degree.
+    @params j: degree of monomial.
+    """
     def _getMonom(self, j):
 
-        var_monom = [self.vars[i]**j[i] for i in range(self.var_num)]
+        var_monom = [ self.vars[i]**j[i] for i in range(self.var_num) ]
         expr = reduce(mul, var_monom)
 
         monomial = sp.Poly(expr, self.vars)
         return monomial.as_expr()
 
+    """
+    Calculates n choose r
+    @params n: n
+            r: r
+    """
     def _choose(self, n, r):
         return factorial(n) // (factorial(r)*factorial(n-r))

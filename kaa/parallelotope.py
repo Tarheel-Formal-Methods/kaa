@@ -1,7 +1,8 @@
 import numpy as np
-from sapo.lputil import minLinProg, maxLinProg
-
-
+from kaa.lputil import minLinProg, maxLinProg
+"""
+Object encapsulating routines calculating properties of parallelotopes
+"""
 class Parallelotope:
 
     def __init__(self, A, b, vars):
@@ -9,6 +10,9 @@ class Parallelotope:
         self.b = b
         self.vars = vars
 
+    '''
+     Returns the minimum base point of the parallelotope.
+    '''
     def getMinPoint(self):
 
         var_min = []
@@ -19,6 +23,9 @@ class Parallelotope:
             var_min.append(min_point)
         return var_min
 
+    '''
+    Returns the maximum base point of the parallelotope.
+    '''
     def getMaxPoint(self):
 
         var_max = []

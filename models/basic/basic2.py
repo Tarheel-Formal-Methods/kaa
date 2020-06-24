@@ -1,8 +1,8 @@
 import sympy as sp
 import numpy as np
 
-from sapo.bundle import Bundle
-from sapo.model import Model
+from kaa.bundle import Bundle
+from kaa.model import Model
 
 class Basic2(Model):
 

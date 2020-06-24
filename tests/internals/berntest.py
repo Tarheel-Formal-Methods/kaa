@@ -1,5 +1,5 @@
 import sympy as sp
-from sapo.bernstein import BernsteinBaseConverter
+from kaa.bernstein import BernsteinBaseConverter
 
 def test_univar_bern_1():
     #Define symbols

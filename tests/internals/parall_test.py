@@ -1,6 +1,6 @@
 import numpy as np
 import sympy as sp
-from sapo.parallelotope import Parallelotope
+from kaa.parallelotope import Parallelotope
 
 def test_min_max_parall_1():
 

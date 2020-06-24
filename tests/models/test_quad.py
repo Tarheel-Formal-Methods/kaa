@@ -1,9 +1,9 @@
-from sapo.reach import ReachSet
-from sapo.flowpipe import FlowPipePlotter
+from kaa.reach import ReachSet
+from kaa.flowpipe import FlowPipePlotter
 from models.quadcopter import Quadcopter
 
-import sapo.benchmark as Benchmark
-from sapo.benchmark import Label
+import kaa.benchmark as Benchmark
+from kaa.benchmark import Label
 
 def test_Quad():
 

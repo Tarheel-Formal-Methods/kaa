@@ -4,15 +4,15 @@ import sympy as sp
 from operator import add
 from functools import reduce
 
-from sapo.bernstein import BernsteinBaseConverter
-from sapo.parallelotope import Parallelotope
-from sapo.lputil import minLinProg, maxLinProg
+from kaa.bernstein import BernsteinBaseConverter
+from kaa.parallelotope import Parallelotope
+from kaa.lputil import minLinProg, maxLinProg
 
-import sapo.benchmark as Benchmark
-from sapo.benchmark import Label
+import kaa.benchmark as Benchmark
+from kaa.benchmark import Label
 
-import sapo.log as Log
-from sapo.log import Debug
+import kaa.log as Log
+from kaa.log import Debug
 
 class Bundle:
 
@@ -36,12 +36,11 @@ class Bundle:
         self.offl = offl
         self.vars = vars
 
-        'Bundle statistics'
         self.sys_dim = len(vars)
         self.num_direct = len(self.L)
 
     """
-    Returns linear constraints representing the polytope defined by their intersection.
+    Returns linear constraints representing the polytope defined by bundle.
     """
     def getIntersect(self):
         A = np.empty([2*self.num_direct,self.sys_dim])
@@ -53,10 +52,11 @@ class Bundle:
             b[ind] = self.offu[ind]
             b[ind + self.num_direct] = self.offl[ind]
 
-        return (A,b)
+        return A, b
 
     """
-    Returns the bundle in its canonical form.
+    Returns the bundle with tightest offsets for each direction vector in self.L
+    i.e each hyperplane defined by the direction vector is tangent to the polytope.
     """
     def canonize(self):
 
@@ -81,6 +81,7 @@ class Bundle:
         A = np.empty([2*self.sys_dim,self.sys_dim])
         b = np.empty(2*self.sys_dim) #row vector
 
+        # Fetch linear constraints defining the parallelotope.
         for fac_ind, facet in enumerate(self.T[temp_ind].astype(int)):
             A[fac_ind] = self.L[facet]
             A[fac_ind + self.sys_dim] = np.negative(self.L[facet])
@@ -88,10 +89,6 @@ class Bundle:
             b[fac_ind + self.sys_dim] = self.offl[facet]
 
         return Parallelotope(A, b, self.vars)
-
-    def __str__(self):
-        return ''.join([str(self.offu), '  ', str(self.offl)])
-
 
 class BundleTransformer:
 
@@ -107,7 +104,6 @@ class BundleTransformer:
         new_offu = np.full(bund.num_direct, np.inf)
         new_offl = np.full(bund.num_direct, np.inf)
 
-        #Print bernstein computations. Separate into subroutine taking paralleltope bundle (L,offu,offl) and c^T \cdot f as parameters and outputs max/min.
         for row_ind, curr_L in enumerate(bund.L):
 
             max_val, min_val = self.findExtrema(bund, curr_L)
@@ -115,7 +111,6 @@ class BundleTransformer:
             new_offu[row_ind] = min(max_val, new_offu[row_ind])
             new_offl[row_ind] = min(-1 * min_val, new_offl[row_ind])
 
-        #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
         print("\n New Offu: {0}   New Offp = {1}\n".format(new_offu[2], new_offl[2]))
         trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
         canon_bund = trans_bund.canonize()
@@ -128,12 +123,12 @@ class BundleTransformer:
     """
     def findExtrema(self, bund, c):
 
-        'Find intersecting unitbox'
+        'Find the bounding box over the intersections of the parallelotopes in bundle.'
         min_coord = [ -1 * np.inf for _ in range(bund.sys_dim) ]
         max_coord = [ np.inf for _ in range(bund.sys_dim) ]
 
-
         for row_ind, row in enumerate(bund.T):
+
             'Calcuate minimum and maximum points of p_i'
             p = bund.getParallelotope(row_ind)
             p_min_coord = p.getMinPoint()
@@ -142,16 +137,12 @@ class BundleTransformer:
             max_coord = [ min(p_max_coord[i], max_coord[i]) for i in range(bund.sys_dim) ]
             min_coord = [ max(p_min_coord[i], min_coord[i]) for i in range(bund.sys_dim) ]
 
-        #Log.write_log(row_ind, p_min_coord, p_max_coord, Debug.MINMAX)
-        #print("Parallelotope:  Max: {0} ,  Min: {1}".format(p_max_coord[2], p_min_coord[2]))
-
         'Calculate substitutions required to map unitbox over our parallelotope'
         var_sub = []
         for var_ind, var in enumerate(bund.vars):
-            var_min = min_coord[var_ind] #linprog opt results
+            var_min = min_coord[var_ind] # LP results
             var_max = max_coord[var_ind]
 
-            #print((var_max,var_min))
             transf_expr = (var_max - var_min) * var + var_min
             var_sub.append((var, transf_expr))
 
@@ -160,14 +151,9 @@ class BundleTransformer:
 
         bound_polyu = reduce(add, bound_polyu)
         transf_bound_polyu = bound_polyu.subs(var_sub)
-        #print(transf_bound_polyu)
 
-        'Calculate min/max Bernstein coefficients'
+        'Calculate min/max Bernstein coefficients over the calculated polynomial'
         base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
-
-        bern_timer = Benchmark.assign_timer(Label.BERN)
-        bern_timer.start()
         max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
-        bern_timer.end()
 
         return max_bern_coeffu, min_bern_coeffu

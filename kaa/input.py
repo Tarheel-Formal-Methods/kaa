@@ -5,7 +5,7 @@ import configparser as conf
 import os.path
 from functools import map
 
-import sapo.model
+import kaa.model
 
 class InputFileParser:
 

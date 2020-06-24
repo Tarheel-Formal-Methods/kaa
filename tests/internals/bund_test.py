@@ -1,7 +1,7 @@
 import sympy as sp
 import numpy as np
-from sapo.bundle import Bundle, BundleTransformer
-from sapo.model import Model
+from kaa.bundle import Bundle, BundleTransformer
+from kaa.model import Model
 
 def test_bund_trans_1():
 
