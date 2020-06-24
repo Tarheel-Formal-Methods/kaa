@@ -1,7 +1,7 @@
 # Brief Explanation of Main Modules.
 
 ## reach.py
-reach.py is responsible for constructing the initial set from the model file and computing the resulting flowpipe. The computation returns a FlowPipe object which is passed to a FlowPipePlotter object for plotting.
+reach.py is responsible for constructing the initial set from a Model object and computing the resulting flowpipe. The computation returns a FlowPipe object which is passed to a FlowPipePlotter object for plotting.
 
 ## bundle.py
 bundle.py contains all of the routines required to transform a bundle. This includes constructing the proper polynomials relevant to finding the offsets for the directions matrix and finding the maximum and minimum Bernstein coefficients for those polynomials.

@@ -17,5 +17,7 @@ def test_LV():
 
     timer.end()
 
-    FlowPipePlotter(mod_flow).plot2DProj(0,1,2)
+    FlowPipePlotter(mod_flow).plot2DProj(0)
+    FlowPipePlotter(mod_flow).plot2DProj(1)
+    FlowPipePlotter(mod_flow).plot2DProj(2)
     Benchmark.generate_stats()

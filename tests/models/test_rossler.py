@@ -16,5 +16,5 @@ def test_Rossler():
     mod_flow = mod_reach.computeReachSet(300)
     timer.end()
 
-    FlowPipePlotter(mod_flow).plot2DProj(2)
+    FlowPipePlotter(mod_flow).plot2DProj(0)
     Benchmark.generate_stats()

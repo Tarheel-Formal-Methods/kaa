@@ -15,6 +15,6 @@ def test_SIR():
     mod_flow = mod_reach.computeReachSet(300)
     timer.end()
 
-    FlowPipePlotter(mod_flow).plot2DProj(3)
+    FlowPipePlotter(mod_flow).plot2DProj(0)
 
     Benchmark.generate_stats()

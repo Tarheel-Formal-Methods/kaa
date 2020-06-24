@@ -17,5 +17,6 @@ def test_Quad():
 
     timer.end()
 
-    FlowPipePlotter(mod_flow).plot2DProj(2)
+    FlowPipePlotter(mod_flow).plot2DProj(5)
+    FlowPipePlotter(mod_flow).plot2DProj(13)
     Benchmark.generate_stats()
