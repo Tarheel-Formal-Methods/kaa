@@ -111,10 +111,10 @@ class BundleTransformer:
             new_offu[row_ind] = min(max_val, new_offu[row_ind])
             new_offl[row_ind] = min(-1 * min_val, new_offl[row_ind])
 
-        print("\n New Offu: {0}   New Offp = {1}\n".format(new_offu[2], new_offl[2]))
+        print("\n New Offu: {0}   New Offp = {1}\n".format(new_offu[1], new_offl[1]))
         trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
-        canon_bund = trans_bund.canonize()
-        return canon_bund
+        #canon_bund = trans_bund.canonize()
+        return trans_bund
 
     """
     Returns extrema of c^T \cdot f over the parallelotope bundle, P.

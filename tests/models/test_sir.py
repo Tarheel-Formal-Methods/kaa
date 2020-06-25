@@ -16,5 +16,7 @@ def test_SIR():
     timer.end()
 
     FlowPipePlotter(mod_flow).plot2DProj(0)
+    FlowPipePlotter(mod_flow).plot2DProj(1)
+    FlowPipePlotter(mod_flow).plot2DProj(2)
 
     Benchmark.generate_stats()

@@ -10,9 +10,9 @@ class SIR(Model):
 
       s, i, r = sp.Symbol('s'), sp.Symbol('i'), sp.Symbol('r')
 
-      ds = s - (0.34*s*i)*0.05;
-      di = i + (0.34*s*i - 0.05*i)*0.05;
-      dr = r + 0.05*i*0.05;
+      ds = s - (0.34*s*i)*0.1;
+      di = i + (0.34*s*i - 0.05*i)*0.1;
+      dr = r + 0.05*i*0.1;
 
       dyns = [ds, di, dr]
       vars = [s, i, r] #In predetermined order
