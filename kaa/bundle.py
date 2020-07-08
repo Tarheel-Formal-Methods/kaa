@@ -30,8 +30,8 @@ class Bundle:
             print("Template matrix T must have the same dimensions as Directions matrix L")
             exit()
 
-        self.T = T
-        self.L = L
+        self.T = T # Templates
+        self.L = L # Directions
         self.offu = offu
         self.offl = offl
         self.vars = vars
@@ -104,17 +104,40 @@ class BundleTransformer:
         new_offu = np.full(bund.num_direct, np.inf)
         new_offl = np.full(bund.num_direct, np.inf)
 
-        for row_ind, curr_L in enumerate(bund.L):
+        for row_ind, row in enumerate(bund.T):
+            #Calcuate minimum and maximum points of p_i
+            p = bund.getParallelotope(row_ind)
+            genFun = p.getGeneratorRep()
+            
+            #Calculate transformation subsitutions
+            var_sub = []
+            for var_ind, var in enumerate(bund.vars):
+                var_sub.append((var, genFun[var_ind]))
 
-            max_val, min_val = self.findExtrema(bund, curr_L)
-            #print("For: {0}  Bernstein Comp :Max:{1} ,  Min: {2}".format(row_ind, max_val, min_val))
-            new_offu[row_ind] = min(max_val, new_offu[row_ind])
-            new_offl[row_ind] = min(-1 * min_val, new_offl[row_ind])
+            for column in row.astype(int):
+                curr_L = bund.L[column] #row in L
 
-        print("\n New Offu: {0}   New Offp = {1}\n".format(new_offu[1], new_offl[1]))
+                #compute polynomial \Lambda_i \cdot (f(v(x)))
+
+                bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(self.f) ]
+
+                bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
+                transf_bound_polyu = bound_polyu.subs(var_sub)
+
+                #Calculate min/max Bernstein coefficients
+                base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
+                max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
+
+                #Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
+
+                new_offu[column] = min(max_bern_coeffu, new_offu[column])
+                new_offl[column] = min(-1 * min_bern_coeffu, new_offl[column])
+
+        #Log.write_log(p_new_offu, p_new_offl, Debug.GLOBAL_BOUND)
+
         trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
-        #canon_bund = trans_bund.canonize()
-        return trans_bund
+        canon_bund = trans_bund.canonize()
+        return canon_bund
 
     """
     Returns extrema of c^T \cdot f over the parallelotope bundle, P.
