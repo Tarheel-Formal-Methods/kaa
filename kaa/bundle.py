@@ -117,15 +117,14 @@ class BundleTransformer:
             for column in row.astype(int):
                 curr_L = bund.L[column] #row in L
 
-                #compute polynomial \Lambda_i \cdot (f(v(x)))
+                #Perform functional composition with transformation from unitbox to parallelotope
+                fog = [ f.subs(var_sub) for f in self.f ]
 
-                bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(self.f) ]
-
+                bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(fog) ]
                 bound_polyu = reduce(add, bound_polyu) #transform to range over unit box
-                transf_bound_polyu = bound_polyu.subs(var_sub)
 
                 #Calculate min/max Bernstein coefficients
-                base_convertu = BernsteinBaseConverter(transf_bound_polyu, bund.vars)
+                base_convertu = BernsteinBaseConverter(bound_polyu, bund.vars)
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
 
                 #Log.write_log(max_bern_coeffu, min_bern_coeffu, row, Debug.LOCAL_BOUND)
