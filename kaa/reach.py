@@ -14,10 +14,11 @@ class ReachSet:
     def __init__(self, model):
         self.model = model
 
-    '''
+    """
     Compute reachable set for the alloted number of time steps.
     @params time_steps: number of time steps to carry out the reachable set computation.
-    '''
+    @returns FlowPipe object with computed flowpipe
+    """
     def computeReachSet(self, time_steps):
 
         initial_set = self.model.bund

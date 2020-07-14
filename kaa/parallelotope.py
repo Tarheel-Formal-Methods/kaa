@@ -15,25 +15,21 @@ class Parallelotope:
         self.A = A[:self.dim]
         self.b = b
 
-        #print("self.d:   {}".format(self.d))
-
     """
     Return list of functions transforming the n-unit-box over the parallelotope.
-    @params
+    @returns list of transfomation from unitbox over the parallelotope.
     """
     def getGeneratorRep(self):
 
         base_vertex = self._computeBaseVertex()
         gen_list = self._computeGenerators(base_vertex)
-        #print("Base Vertex:", base_vertex )
-        #print("Gen Vertex: ", gen_list)
 
-
+        'Create list representing q + \sum_{j} a_j* g_j'
         expr_list = base_vertex
         for var_ind, var in enumerate(self.vars):
             for i in range(self.dim):
                 expr_list[i] += gen_list[var_ind][i] * var
-        #print("Expr List:" , expr_list)
+
         return expr_list
     
     """
@@ -50,17 +46,18 @@ class Parallelotope:
 
     where q is the base vertex and the g_j are the generators. a_j will be in the unitbox [0,1]
 
-    @params base_vertex: base vertex
+    @params base_vertex: base vertex q
+    @returns generator vectors g_j
     """
     def _computeGenerators(self, base_vertex):
 
-        upper_b = self.b[:self.dim]
+        u_b = self.b[:self.dim]
 
         vertices = []
         coeff_mat = self._convertMatFormat(self.A)
 
         for i in range(self.dim):
-            negated_bi = np.copy(upper_b)
+            negated_bi = np.copy(u_b)
             negated_bi[i] = -self.b[i + self.dim]
             negated_bi = self._convertMatFormat(negated_bi)
             
@@ -68,8 +65,7 @@ class Parallelotope:
             vertex_i = self._convertSolSetToList(sol_set_i)
             vertices.append(vertex_i)
 
-        #print("Vertices:", vertices)
-        return [ [x-y for x,y in zip(vertices[i], base_vertex)] for i in range(self.dim) ]
+        return [ [ x-y for x,y in zip(vertices[i], base_vertex) ] for i in range(self.dim) ]
        
 
     """
@@ -82,10 +78,10 @@ class Parallelotope:
     """
     def _computeBaseVertex(self):
 
-        upper_b = self.b[:self.dim]
+        u_b = self.b[:self.dim]
 
         coeff_mat = self._convertMatFormat(self.A)
-        offset_mat = self._convertMatFormat(upper_b)
+        offset_mat = self._convertMatFormat(u_b)
 
         sol_set = linsolve((coeff_mat, offset_mat), self.vars)
         return self._convertSolSetToList(sol_set)
