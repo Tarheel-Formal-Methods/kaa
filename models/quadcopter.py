@@ -65,29 +65,29 @@ class Quadcopter(Model):
 
            dyns = [dpn,dpe,dh,du,dv,dw,dq0v,dq1v,dq2v,dq3v,dp,dq,dr,dhI,duI,dvI,dpsiI]
 
-           num_dirs = 17
-           num_temp = 1
+           num_dirs = 18
+           num_temp = 2
 
            L = np.zeros([num_dirs,dim_sys])
 
            for i in range(dim_sys):
                L[i][i] = 1
 
-           #L[17][2] = 0.5; L[17][5] = 0.5; L[17][6] = 0.5; L[17][15] = 0.25;
+           L[17][2] = 0.5; L[17][5] = 0.5; L[17][6] = 0.5; L[17][15] = 0.25;
 
            T = np.zeros([num_temp, dim_sys]);
            for i in range(dim_sys):
                T[0][i] = i
-               #T[1][i] = i
+               T[1][i] = i
 
-           #T[1][5] = 17
+           T[1][5] = 17
 
            offu = np.zeros(num_dirs);
            offl = np.zeros(num_dirs);
 
            offu[2] = 0.21; offl[2] = -0.20;
            offu[6] = 1; offl[6] = -1;
-           #offu[17] = 100; offl[17] = 100;
+           offu[17] = 100; offl[17] = 100;
 
            b = Bundle(T, L, offu, offl, vars)
            super().__init__(b, dyns, vars)
