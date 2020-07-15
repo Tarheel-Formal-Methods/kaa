@@ -8,8 +8,7 @@ from kaa.bernstein import BernsteinBaseConverter
 from kaa.parallelotope import Parallelotope
 from kaa.lputil import minLinProg, maxLinProg
 
-import kaa.benchmark as Benchmark
-from kaa.benchmark import Label
+from kaa.timer import Timer
 
 import kaa.log as Log
 from kaa.log import Debug
@@ -57,6 +56,7 @@ class Bundle:
     """
     Returns the bundle with tightest offsets for each direction vector in self.L
     i.e each hyperplane defined by the direction vector is re-fitted to be tangent to the polytope.
+    @returns canonized Bundle object
     """
     def canonize(self):
 
@@ -74,7 +74,8 @@ class Bundle:
 
     """
     Returns the Parallelotope object defined by a row in the template matrix.
-    @params temp_ind: index of row corresponding to desired parallelotope.
+    @params temp_ind: index of row corresponding to desired parallelotope.i
+    @returns Parallelotope object described by T[temp_ind]
     """
     def getParallelotope(self, temp_ind):
 
@@ -119,14 +120,18 @@ class BundleTransformer:
                 curr_L = bund.L[column]
 
                 'Perform functional composition with exact transformation from unitbox to parallelotope.'
+                Timer.start('Functional Composition')
                 fog = [ f.subs(var_sub) for f in self.f ]
+                Timer.start('Functional Composition')
 
                 bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(fog) ]
                 bound_polyu = reduce(add, bound_polyu)
 
                 'Calculate min/max Bernstein coefficients.'
+                Timer.start('Bernstein Computation')
                 base_convertu = BernsteinBaseConverter(bound_polyu, bund.vars)
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
+                Timer.end('Bernstein Computation')
 
                 new_offu[column] = min(max_bern_coeffu, new_offu[column])
                 new_offl[column] = min(-1 * min_bern_coeffu, new_offl[column])

@@ -2,6 +2,7 @@ import numpy as np
 from sympy import Matrix, linsolve, EmptySet
 
 from kaa.lputil import minLinProg, maxLinProg
+from kaa.timer import Timer
 
 """
 Object encapsulating routines calculating properties of parallelotopes.
@@ -21,14 +22,16 @@ class Parallelotope:
     """
     def getGeneratorRep(self):
 
+        Timer.start('Generator Procedure')
         base_vertex = self._computeBaseVertex()
         gen_list = self._computeGenerators(base_vertex)
 
-        'Create list representing q + \sum_{j} a_j* g_j'
+        'Create list representing the linear transformation q + \sum_{j} a_j* g_j'
         expr_list = base_vertex
         for var_ind, var in enumerate(self.vars):
             for i in range(self.dim):
                 expr_list[i] += gen_list[var_ind][i] * var
+        Timer.end('Generator Procedure')
 
         return expr_list
     
@@ -75,6 +78,7 @@ class Parallelotope:
     Ax = u_b
 
     where u_b are the offsets for the upper facets of parallelotope (first half of self.b).
+    @returns base-vertex in list
     """
     def _computeBaseVertex(self):
 
@@ -89,6 +93,7 @@ class Parallelotope:
     """
     Convert numpy matrix into sympy matrix
     @params mat: numpy matrix
+    @returns sympy matrix counterpart
     """
     def _convertMatFormat(self, mat):
         return Matrix(mat.tolist())
@@ -96,9 +101,10 @@ class Parallelotope:
     """
     Takes solution set returned by sympy and converts into list
     @params fin_set: FiniteSet
+    @returns list of sympy solution set
     """
     def _convertSolSetToList(self, fin_set):
- ,
+
         assert fin_set is not EmptySet
 
         return list(fin_set.args[0])

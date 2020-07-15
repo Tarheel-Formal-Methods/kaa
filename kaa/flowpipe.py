@@ -5,9 +5,8 @@ from scipy.spatial import HalfspaceIntersection
 
 import kaa.log as Log
 from kaa.log import Debug
-import kaa.benchmark as Benchmark
-from kaa.benchmark import Label
 from kaa.lputil import minLinProg, maxLinProg
+from kaa.timer import Timer
 
 """
 Object encapsulating flowpipe data.

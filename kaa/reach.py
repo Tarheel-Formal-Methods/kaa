@@ -1,7 +1,6 @@
-import kaa.benchmark as Benchmark
+from kaa.timer import Timer
 import kaa.log as Log
 
-from kaa.benchmark import Label
 from kaa.log import Debug
 from kaa.bundle import Bundle, BundleTransformer
 from kaa.flowpipe import FlowPipe
@@ -25,6 +24,7 @@ class ReachSet:
         transformer = BundleTransformer(self.model.f)
         flowpipe = [initial_set]
 
+        Timer.start('Reachable Set Computation')
         for ind in range(time_steps):
 
             transf_timer = Benchmark.assign_timer(Label.TRANSF)
@@ -34,5 +34,6 @@ class ReachSet:
 
             print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
             flowpipe.append(trans_bund)
+        Timer.end('Reachable Set Computation')
 
         return FlowPipe(flowpipe, self.model.vars)
