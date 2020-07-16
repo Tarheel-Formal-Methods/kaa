@@ -2,6 +2,9 @@ import time
 from functools import reduce
 from operator import add
 
+"""
+Timer object containing duration data.
+"""
 class TimeData:
 
     def __init__(self, label):
@@ -17,7 +20,10 @@ class TimeData:
     def end(self):
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
-
+        
+"""
+Static class containing all timing utility functions and statistics generating routines.
+"""
 class Timer:
 
     timer_stack = []
@@ -45,7 +51,7 @@ class Timer:
 
             Timer.time_table[end_timer.label].append(end_timer)
         else:
-            raise RunTimeError("Previous timer has not been stopped yet.")
+            raise RunTimeError("Previous timer has not been stopped yet or timer has not been instantiated.")
 
     @staticmethod
     def generate_stats():
@@ -53,10 +59,9 @@ class Timer:
         for label, times in Timer.time_table.items():
             print("Average {} Duration: {}".format(label, avg_time(times)))
 
-
     def avg_time(times):
-        return reduce(add, times) / len(times)
+        return reduce(add, [t.duration for t in times]) / len(times)
 
 
     def total_time(times):
-        return reduce(add, times)
+        return reduce(add,[t.duration for t in times])

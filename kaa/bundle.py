@@ -10,9 +10,6 @@ from kaa.lputil import minLinProg, maxLinProg
 
 from kaa.timer import Timer
 
-import kaa.log as Log
-from kaa.log import Debug
-
 class Bundle:
 
     def __init__(self, T, L, offu, offl, vars):
@@ -40,6 +37,8 @@ class Bundle:
 
     """
     Returns linear constraints representing the polytope defined by bundle.
+
+    @returns linear constraints and their offsets.
     """
     def getIntersect(self):
         A = np.empty([2*self.num_direct,self.sys_dim])
@@ -98,7 +97,9 @@ class BundleTransformer:
 
     """
     Transforms the bundle according to the dynamics governing the system. (dictated by self.f)
+
     @params bund: Bundle object to be transformed under dynamics.
+    @returns canonized transformed bundle.
     """
     def transform(self, bund):
 
