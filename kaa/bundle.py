@@ -123,7 +123,7 @@ class BundleTransformer:
                 'Perform functional composition with exact transformation from unitbox to parallelotope.'
                 Timer.start('Functional Composition')
                 fog = [ f.subs(var_sub) for f in self.f ]
-                Timer.start('Functional Composition')
+                Timer.stop('Functional Composition')
 
                 bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(fog) ]
                 bound_polyu = reduce(add, bound_polyu)
@@ -132,7 +132,7 @@ class BundleTransformer:
                 Timer.start('Bernstein Computation')
                 base_convertu = BernsteinBaseConverter(bound_polyu, bund.vars)
                 max_bern_coeffu, min_bern_coeffu = base_convertu.computeBernCoeff()
-                Timer.end('Bernstein Computation')
+                Timer.stop('Bernstein Computation')
 
                 new_offu[column] = min(max_bern_coeffu, new_offu[column])
                 new_offl[column] = min(-1 * min_bern_coeffu, new_offl[column])

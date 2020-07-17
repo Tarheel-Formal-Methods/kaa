@@ -24,16 +24,15 @@ class ReachSet:
         transformer = BundleTransformer(self.model.f)
         flowpipe = [initial_set]
 
-        Timer.start('Reachable Set Computation')
+
         for ind in range(time_steps):
 
-            transf_timer = Benchmark.assign_timer(Label.TRANSF)
-            transf_timer.start()
-            trans_bund = transformer.transform(flowpipe[ind])
-            transf_timer.end()
 
-            print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, transf_timer.duration))
+            Timer.start('Reachable Set Computation')
+            trans_bund = transformer.transform(flowpipe[ind])
+            reach_time = Timer.stop('Reachable Set Computation')
+
+            print("Computed Step {0} -- Time Elapsed: {1} sec".format(ind, reach_time))
             flowpipe.append(trans_bund)
-        Timer.end('Reachable Set Computation')
 
         return FlowPipe(flowpipe, self.model.vars)

@@ -5,7 +5,7 @@ from operator import add
 """
 Timer object containing duration data.
 """
-class TimeData:
+class TimerData:
 
     def __init__(self, label):
 
@@ -34,30 +34,31 @@ class Timer:
         
         if not Timer.timer_stack or Timer.timer_stack[-1].label != label:
             start_timer = TimerData(label)
-            start_timer.start_time()
+            start_timer.start()
             Timer.timer_stack.append(start_timer)
         else:
-            raise RunTimeError("Timer of same category started previously.")
+            raise RuntimeError("Timer of same category started previously for Timer: {}.".format(label))
 
     @staticmethod
     def stop(label):
 
-        if Timer.timer_stack[-1] == label:
+        if Timer.timer_stack[-1].label == label:
             end_timer = Timer.timer_stack.pop()
-            end_timer.end_time()
+            end_timer.end()
 
             if end_timer.label not in Timer.time_table:
                 Timer.time_table[end_timer.label] = []
 
             Timer.time_table[end_timer.label].append(end_timer)
+            return end_timer.duration
         else:
-            raise RunTimeError("Previous timer has not been stopped yet or timer has not been instantiated.")
+            raise RuntimeError("Previous timer has not been stopped yet or timer has not been instantiated for Timer: {}.".format(label))
 
     @staticmethod
     def generate_stats():
 
         for label, times in Timer.time_table.items():
-            print("Average {} Duration: {}".format(label, avg_time(times)))
+            print("Average {} Duration: {} sec".format(label, Timer.avg_time(times)))
 
     def avg_time(times):
         return reduce(add, [t.duration for t in times]) / len(times)

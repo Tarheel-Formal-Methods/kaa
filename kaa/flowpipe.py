@@ -53,9 +53,8 @@ class FlowPipePlotter:
 
         for ax_ind, var_ind in enumerate(vars_tup):
 
+            Timer.start('Proj')
             curr_var = self.vars[var_ind]
-
-            plot_timer = Benchmark.assign_timer(Label.PLOT_PROJ)
 
             'Vector of minimum and maximum points of the polytope represented by parallelotope bundle.'
             y_min, y_max = np.empty(pipe_len), np.empty(pipe_len)
@@ -76,8 +75,8 @@ class FlowPipePlotter:
             ax[ax_ind].set_xlabel("t: time steps")
             ax[ax_ind].set_ylabel("Reachable Set for {0}".format(curr_var))
 
-            plot_timer.end()
-            print("Plotting projection for dimension {0} done -- Time Spent: {1}".format(curr_var, plot_timer.duration))
+            plot_time = Timer.stop('Proj')
+            print("Plotting projection for dimension {0} done -- Time Spent: {1}".format(curr_var, plot_time))
 
         fig.show()
 
@@ -89,8 +88,7 @@ class FlowPipePlotter:
     def plot2DPhase(self, x, y):
 
 
-        phase_timer = Benchmark.assign_timer(Label.PLOT_PHASE)
-        phase_timer.start()
+        Timer.start('Phase')
 
         x_var, y_var = self.vars[x], self.vars[y]
 
@@ -137,5 +135,5 @@ class FlowPipePlotter:
 
         fig.show()
 
-        phase_timer.end()
-        print("Plotting phase for dimensions {0}, {1} done -- Time Spent: {2}".format(x_var, y_var, phase_timer.duration))
+        phase_time = Timer.stop('Phase')
+        print("Plotting phase for dimensions {0}, {1} done -- Time Spent: {2}".format(x_var, y_var, phase_time))

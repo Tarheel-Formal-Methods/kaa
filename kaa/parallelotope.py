@@ -31,7 +31,7 @@ class Parallelotope:
         for var_ind, var in enumerate(self.vars):
             for i in range(self.dim):
                 expr_list[i] += gen_list[var_ind][i] * var
-        Timer.end('Generator Procedure')
+        Timer.stop('Generator Procedure')
 
         return expr_list
     
