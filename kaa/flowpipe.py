@@ -73,10 +73,10 @@ class FlowPipePlotter:
 
             ax[ax_ind].fill_between(t, y_min, y_max)
             ax[ax_ind].set_xlabel("t: time steps")
-            ax[ax_ind].set_ylabel("Reachable Set for {0}".format(curr_var))
+            ax[ax_ind].set_ylabel("Reachable Set for {}".format(curr_var))
 
             plot_time = Timer.stop('Proj')
-            print("Plotting projection for dimension {0} done -- Time Spent: {1}".format(curr_var, plot_time))
+            print("Plotting projection for dimension {} done -- Time Spent: {}".format(curr_var, plot_time))
 
         fig.show()
 
@@ -136,4 +136,4 @@ class FlowPipePlotter:
         fig.show()
 
         phase_time = Timer.stop('Phase')
-        print("Plotting phase for dimensions {0}, {1} done -- Time Spent: {2}".format(x_var, y_var, phase_time))
+        print("Plotting phase for dimensions {}, {} done -- Time Spent: {}".format(x_var, y_var, phase_time))

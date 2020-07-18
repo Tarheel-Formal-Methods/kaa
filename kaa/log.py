@@ -7,8 +7,7 @@ Basic logger utility module for debugging purposes.
 #Just basic write to file feature that nicely formats the relevant variable states and outputs them into a readable format.
 #Just assume that the debugging info is already known beforehand.
 #Quick and dirty logging feature. Not extensive or efficient by any means in its current state.
-
-
+#
 spaces = lambda x: ''.join('  ' for _ in range(x))
 
 class Debug(Enum):
