@@ -59,17 +59,23 @@ class Parallelotope:
 
         p = mp.Pool(processes=5)
 
-        vertices = p.map(self.gen_worker, [i for i in range(self.dim)])
+        u_b = self.b[:self.dim]
+        coeff_mat = self._convertMatFormat(self.A)
+
+        vertices = p.starmap(self.gen_worker, [ (i, u_b, coeff_mat) for i in range(self.dim) ])
         p.close()
         p.join()
 
         return [ [ x-y for x,y in zip(vertices[i], base_vertex) ] for i in range(self.dim) ]
 
-
-    def gen_worker(self, i):
-        
-        u_b = self.b[:self.dim]
-        coeff_mat = self._convertMatFormat(self.A)
+    """
+    Worker process for calculating vertices of higher-dimensional parallelotopes.
+    Only called by Pool.starmap
+    @params i - vertex index
+            u_b, coef_mat - shared reference to upper offsets and directions matrix.
+    @returns coordinates of vertex
+    """
+    def gen_worker(self, i, u_b, coeff_mat):
 
         negated_bi = np.copy(u_b)
         negated_bi[i] = -self.b[i + self.dim]
