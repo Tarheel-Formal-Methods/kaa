@@ -1,5 +1,6 @@
 import numpy as np
 from sympy import Matrix, linsolve, EmptySet
+import multiprocessing as mp
 
 from kaa.lputil import minLinProg, maxLinProg
 from kaa.timer import Timer
@@ -42,10 +43,12 @@ class Parallelotope:
 
     Ax = [b_1, ... , -b_{i+n}, ... , b_n]^T
 
-    Note that this simply finds the vertex to calculate the generator vectors.
+    Note that this simply finds the vertex to calculate the generator vectors. The generators will be the vectors g_j = v_j - q
+    where v_j is the jth vertex calculated in the manner above.
+
     The parallelotope will be exprssed as sum of the base vertex and the convex combination of the generators.
 
-   p(a_1, ... ,a_n) =  q + \sum_{j} a_j * g_j
+    p(a_1, ... ,a_n) =  q + \sum_{j} a_j * g_j
 
     where q is the base vertex and the g_j are the generators. a_j will be in the unitbox [0,1]
 
@@ -54,22 +57,29 @@ class Parallelotope:
     """
     def _computeGenerators(self, base_vertex):
 
-        u_b = self.b[:self.dim]
+        p = mp.Pool(processes=5)
 
-        vertices = []
-        coeff_mat = self._convertMatFormat(self.A)
-
-        for i in range(self.dim):
-            negated_bi = np.copy(u_b)
-            negated_bi[i] = -self.b[i + self.dim]
-            negated_bi = self._convertMatFormat(negated_bi)
-            
-            sol_set_i = linsolve((coeff_mat, negated_bi), self.vars)
-            vertex_i = self._convertSolSetToList(sol_set_i)
-            vertices.append(vertex_i)
+        vertices = p.map(self.gen_worker, [i for i in range(self.dim)])
+        p.close()
+        p.join()
 
         return [ [ x-y for x,y in zip(vertices[i], base_vertex) ] for i in range(self.dim) ]
-       
+
+
+    def gen_worker(self, i):
+        
+        u_b = self.b[:self.dim]
+        coeff_mat = self._convertMatFormat(self.A)
+
+        negated_bi = np.copy(u_b)
+        negated_bi[i] = -self.b[i + self.dim]
+        negated_bi = self._convertMatFormat(negated_bi)
+
+        sol_set_i = linsolve((coeff_mat, negated_bi), self.vars)
+        vertex_i = self._convertSolSetToList(sol_set_i)
+
+        return vertex_i
+
 
     """
     Calculate the base vertex of the parallelotope (variable q)
@@ -78,6 +88,7 @@ class Parallelotope:
     Ax = u_b
 
     where u_b are the offsets for the upper facets of parallelotope (first half of self.b).
+
     @returns base-vertex in list
     """
     def _computeBaseVertex(self):
@@ -92,6 +103,7 @@ class Parallelotope:
 
     """
     Convert numpy matrix into sympy matrix
+
     @params mat: numpy matrix
     @returns sympy matrix counterpart
     """
@@ -100,6 +112,7 @@ class Parallelotope:
     
     """
     Takes solution set returned by sympy and converts into list
+
     @params fin_set: FiniteSet
     @returns list of sympy solution set
     """
