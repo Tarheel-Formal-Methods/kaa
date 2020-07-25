@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams.update({'font.size': 15})
+
 from scipy.spatial import HalfspaceIntersection
 
 import kaa.log as Log
