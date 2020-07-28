@@ -1,6 +1,10 @@
 # Kaa
 Kaa is a tool for reachability analysis of polynomial dynamical systems using parallelotope bundles.
 It is a rewrite of the tool Sapo introduced by Dreossi, Dang, Piazza [(paper)](https://dl.acm.org/doi/abs/10.1145/2883817.2883838)
+and formally through Dreossi's paper: 
+[Sapo: Reachability Computation and Parameter Synthesis of Polynomial Dynamical Systems](https://arxiv.org/pdf/1607.02200.pdf)
+Other papers elaborating on the techniques used in Kaa are:
+[Parameter Synthesis using Parallelotopic Enclosure and Applications to Epidemic Models](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.707.7012&rep=rep1&type=pdf)
 
 # Dependencies
 Kaa relies only on the following python3 packages:
