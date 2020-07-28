@@ -1,9 +1,10 @@
 import numpy as np
-from sympy import Matrix, linsolve, EmptySet
+from sympy import Matrix, solve, EmptySet
 import multiprocessing as mp
 
 from kaa.lputil import minLinProg, maxLinProg
 from kaa.timer import Timer
+from kaa.settings import KaaSettings
 
 """
 Object encapsulating routines calculating properties of parallelotopes.
@@ -57,16 +58,21 @@ class Parallelotope:
     """
     def _computeGenerators(self, base_vertex):
 
-        p = mp.Pool(processes=5)
-
         u_b = self.b[:self.dim]
-        coeff_mat = self._convertMatFormat(self.A)
+        coeff_mat = self.A
 
-        vertices = p.starmap(self.gen_worker, [ (i, u_b, coeff_mat) for i in range(self.dim) ])
-        p.close()
-        p.join()
+        'Hacky way to toggle parallelism for experiments'
+        if KaaSettings.use_parallel:
+            p = mp.Pool(processes=4)
+            vertices = p.starmap(self._gen_worker, [ (i, u_b, coeff_mat) for i in range(self.dim) ])
+            p.close()
+            p.join()
+        else:
+            vertices = []
+            for i in range(self.dim):
+               vertices.append(self._gen_worker(i, u_b, coeff_mat))
 
-        return [ [ x-y for x,y in zip(vertices[i], base_vertex) ] for i in range(self.dim) ]
+        return [ [x-y for x,y in zip(vertices[i], base_vertex)] for i in range(self.dim) ]
 
     """
     Worker process for calculating vertices of higher-dimensional parallelotopes.
@@ -75,16 +81,13 @@ class Parallelotope:
             u_b, coef_mat - shared reference to upper offsets and directions matrix.
     @returns coordinates of vertex
     """
-    def gen_worker(self, i, u_b, coeff_mat):
+    def _gen_worker(self, i, u_b, coeff_mat):
 
         negated_bi = np.copy(u_b)
         negated_bi[i] = -self.b[i + self.dim]
-        negated_bi = self._convertMatFormat(negated_bi)
+        sol_set_i = np.linalg.solve(self.A, negated_bi)
 
-        sol_set_i = linsolve((coeff_mat, negated_bi), self.vars)
-        vertex_i = self._convertSolSetToList(sol_set_i)
-
-        return vertex_i
+        return sol_set_i
 
 
     """
@@ -101,29 +104,5 @@ class Parallelotope:
 
         u_b = self.b[:self.dim]
 
-        coeff_mat = self._convertMatFormat(self.A)
-        offset_mat = self._convertMatFormat(u_b)
-
-        sol_set = linsolve((coeff_mat, offset_mat), self.vars)
-        return self._convertSolSetToList(sol_set)
-
-    """
-    Convert numpy matrix into sympy matrix
-
-    @params mat: numpy matrix
-    @returns sympy matrix counterpart
-    """
-    def _convertMatFormat(self, mat):
-        return Matrix(mat.tolist())
-    
-    """
-    Takes solution set returned by sympy and converts into list
-
-    @params fin_set: FiniteSet
-    @returns list of sympy solution set
-    """
-    def _convertSolSetToList(self, fin_set):
-
-        assert fin_set is not EmptySet
-
-        return list(fin_set.args[0])
+        sol_set = np.linalg.solve(self.A, u_b)
+        return list(sol_set)

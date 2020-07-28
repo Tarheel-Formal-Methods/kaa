@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
-plt.rcParams.update({'font.size': 15})
-
 from scipy.spatial import HalfspaceIntersection
 
-import kaa.log as Log
-from kaa.log import Debug
 from kaa.lputil import minLinProg, maxLinProg
 from kaa.timer import Timer
+from kaa.settings import PlotSettings
+
+plt.rcParams.update({'font.size': PlotSettings.plot_font})
+
 
 """
 Object encapsulating flowpipe data.
