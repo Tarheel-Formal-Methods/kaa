@@ -1,5 +1,4 @@
 import numpy as np
-from sympy import Matrix, solve, EmptySet
 import multiprocessing as mp
 
 from kaa.lputil import minLinProg, maxLinProg

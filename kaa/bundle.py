@@ -122,7 +122,7 @@ class BundleTransformer:
 
                 'Perform functional composition with exact transformation from unitbox to parallelotope.'
                 Timer.start('Functional Composition')
-                fog = [ f.subs(var_sub) for f in self.f ]
+                fog = [ f.subs(var_sub, simultaneous=True) for f in self.f ]
                 Timer.stop('Functional Composition')
 
                 bound_polyu = [ curr_L[func_ind] * func for func_ind, func in enumerate(fog) ]
@@ -136,8 +136,6 @@ class BundleTransformer:
 
                 new_offu[column] = min(max_bern_coeffu, new_offu[column])
                 new_offl[column] = min(-1 * min_bern_coeffu, new_offl[column])
-
-        #print("New Offu: {}   NewOffl: {}".format(new_offu,new_offl))
 
         trans_bund = Bundle(bund.T, bund.L, new_offu, new_offl, bund.vars)
         canon_bund = trans_bund.canonize()
